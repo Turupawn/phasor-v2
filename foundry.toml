@@ -3,4 +3,8 @@ src = "src"
 out = "out"
 libs = ["node_modules", "lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+include_paths=["packages/**"]
+
+# The optimizer is the key here
+optimizer = true
+optimizer_runs = 99999 # Lowering this number reduces deployment size

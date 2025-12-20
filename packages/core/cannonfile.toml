@@ -1,4 +1,4 @@
-name = "phasor-v2"
+name = "phasor-v2-core"
 version = "<%= package.version %>"
 description = "Native DEX for Monad"
 keywords = ["DEX", "Monad"]
@@ -14,14 +14,3 @@ USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 [deploy.UniswapV2Factory]
 artifact = "UniswapV2Factory"
 args = ["<%= settings.owner %>"]
-
-[deploy.UniswapV2Router]
-artifact = "UniswapV2Router02"
-args = ["<%= contracts.UniswapV2Factory.address %>", "<%= settings.WMON %>"]
-
-[deploy.WETH]
-artifact = "WETH9"
-
-[deploy.ERC20]
-artifact = "ERC20"
-args = [1000000000]
