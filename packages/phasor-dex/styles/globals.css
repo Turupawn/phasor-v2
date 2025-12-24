@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 187 100% 50%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5% 18%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 328 100% 50%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 18%;
+    --input: 240 5% 18%;
+    --ring: 187 100% 50%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(240 10% 6%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(240 5% 25%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(240 5% 35%);
+}
+
+/* Phasor-specific utilities */
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-phasor-gradient;
+  }
+
+  .border-gradient {
+    border: 1px solid transparent;
+    background: 
+      linear-gradient(hsl(240 10% 6%), hsl(240 10% 6%)) padding-box,
+      linear-gradient(135deg, #00d9ff, #7928ca, #ff0080) border-box;
+  }
+
+  .glow-effect {
+    box-shadow: 
+      0 0 20px rgba(0, 217, 255, 0.15),
+      0 0 40px rgba(0, 217, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .glass {
+    @apply bg-surface-2/80 backdrop-blur-xl;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-phasor-500/30 hover:shadow-glow;
+  }
+
+  /* Number input without spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* Token input styling */
+.token-input {
+  @apply bg-transparent text-3xl font-medium placeholder:text-muted-foreground/50 focus:outline-none w-full;
+}
+
+/* Animation for swap arrow */
+.swap-arrow {
+  @apply transition-transform duration-200 hover:scale-110;
+}
+
+.swap-arrow:active {
+  @apply scale-95;
+}
+
+/* Pool card animations */
+.pool-card {
+  @apply transition-all duration-300;
+}
+
+.pool-card:hover {
+  @apply -translate-y-1 shadow-glow;
+}
+
+/* Background noise texture */
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+}
+
+/* Gradient orb background effect */
+.gradient-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.gradient-orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 217, 255, 0.4) 0%, transparent 70%);
+  top: -200px;
+  right: -200px;
+}
+
+.gradient-orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(121, 40, 202, 0.3) 0%, transparent 70%);
+  bottom: -150px;
+  left: -150px;
+}

@@ -1,2 +1,1 @@
 forge-std/=lib/forge-std/src/
-@uniswap=packages/periphery/node_modules/@uniswap

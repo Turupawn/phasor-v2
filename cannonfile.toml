@@ -8,20 +8,21 @@ privateSourceCode = false
 # Main settings for Factory and Router
 [var.main]
 owner = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-WMON = "0x760afe86e5de5fa0ee542fc7b7b713e1c5425701"
-USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+WMON = "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541"
+USDC = "0x534b2f3A21130d7a60830c2Df862319e593943A3"
 
 [deploy.UniswapV2Factory]
-artifact = "UniswapV2Factory"
+artifact = "packages/core/contracts/UniswapV2Factory.sol:UniswapV2Factory"
 args = ["<%= settings.owner %>"]
 
 [deploy.UniswapV2Router]
 artifact = "UniswapV2Router02"
 args = ["<%= contracts.UniswapV2Factory.address %>", "<%= settings.WMON %>"]
 
-[deploy.WETH]
-artifact = "WETH9"
+[deploy.TKN1]
+artifact = "packages/core/contracts/test/ERC20.sol:ERC20"
+args = [100000000000000]
 
-[deploy.ERC20]
-artifact = "ERC20"
-args = [1000000000]
+[deploy.TKN2]
+artifact = "packages/core/contracts/test/ERC20.sol:ERC20"
+args = [100000000000000]

@@ -1,0 +1,87 @@
+{
+  "name": "Phasor DEX Default Token List",
+  "timestamp": "2025-12-24T07:23:41.480Z",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "tags": {
+    "stablecoin": {
+      "name": "Stablecoin",
+      "description": "Tokens pegged to a stable asset"
+    },
+    "wrapped": {
+      "name": "Wrapped",
+      "description": "Wrapped native token"
+    },
+    "test": {
+      "name": "Test Token",
+      "description": "Test tokens for development"
+    }
+  },
+  "logoURI": "https://phasor.xyz/logo.png",
+  "keywords": [
+    "phasor",
+    "dex",
+    "monad",
+    "default"
+  ],
+  "tokens": [
+    {
+      "chainId": 10143,
+      "address": "0xaca81583840B1bf2dDF6CDe824ada250C1936B4D",
+      "name": "Test Token 1",
+      "symbol": "TKN1",
+      "decimals": 18,
+      "logoURI": "/tokens/mon.svg",
+      "tags": [
+        "test"
+      ]
+    },
+    {
+      "chainId": 10143,
+      "address": "0x70bDA08DBe07363968e9EE53d899dFE48560605B",
+      "name": "Test Token 2",
+      "symbol": "TKN2",
+      "decimals": 18,
+      "logoURI": "/tokens/usdc.svg",
+      "tags": [
+        "test"
+      ]
+    },
+    {
+      "chainId": 10143,
+      "address": "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541",
+      "name": "Wrapped Monad",
+      "symbol": "WMON",
+      "decimals": 18,
+      "logoURI": "/tokens/mon.svg",
+      "tags": [
+        "wrapped"
+      ]
+    },
+    {
+      "chainId": 10143,
+      "address": "0xAA292E8611aDF267e563f334Ee42320aC96D0463",
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "decimals": 6,
+      "logoURI": "/tokens/usdc.svg",
+      "tags": [
+        "stablecoin"
+      ]
+    },
+    {
+      "chainId": 10143,
+      "address": "0x5c74c94173F05dA1720953407cbb920F3DF9f887",
+      "name": "Tether USD",
+      "symbol": "USDT",
+      "decimals": 6,
+      "logoURI": "/tokens/usdt.svg",
+      "tags": [
+        "stablecoin"
+      ]
+    }
+  ]
+}
