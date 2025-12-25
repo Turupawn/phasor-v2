@@ -139,14 +139,10 @@ export function TokenSelector({
             <button
               key={token.address}
               onClick={() => handleSelect(token)}
-              disabled={
-                selectedToken?.address === token.address ||
-                otherToken?.address === token.address
-              }
+              disabled={selectedToken?.address === token.address}
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-full border border-surface-4 transition-all",
-                selectedToken?.address === token.address ||
-                  otherToken?.address === token.address
+                selectedToken?.address === token.address
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:border-phasor-500/50 hover:bg-surface-3"
               )}
@@ -173,10 +169,7 @@ export function TokenSelector({
                 key={token.address}
                 token={token}
                 onSelect={handleSelect}
-                disabled={
-                  selectedToken?.address === token.address ||
-                  otherToken?.address === token.address
-                }
+                disabled={selectedToken?.address === token.address}
               />
             ))
           )}

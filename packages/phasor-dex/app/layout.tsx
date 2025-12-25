@@ -43,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} font-sans min-h-screen flex flex-col`}
+        className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} min-h-screen flex flex-col`}
       >
         <Providers>
           {/* Background Effects */}

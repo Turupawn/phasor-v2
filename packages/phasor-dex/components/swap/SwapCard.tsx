@@ -142,17 +142,23 @@ export function SwapCard() {
     setInputAmount("");
   }, [inputToken, outputToken]);
 
-  // Handle token selection
+  // Handle token selection - swap positions if selecting the other token
   const handleSelectToken = (token: Token) => {
     if (selectorOpen === "input") {
-      setInputToken(token);
       if (outputToken?.address === token.address) {
-        setOutputToken(null);
+        // Swap the tokens
+        setInputToken(outputToken);
+        setOutputToken(inputToken);
+      } else {
+        setInputToken(token);
       }
     } else {
-      setOutputToken(token);
       if (inputToken?.address === token.address) {
-        setInputToken(null);
+        // Swap the tokens
+        setOutputToken(inputToken);
+        setInputToken(outputToken);
+      } else {
+        setOutputToken(token);
       }
     }
   };

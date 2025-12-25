@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
   { href: "/swap", label: "Swap" },
@@ -64,7 +65,6 @@ export function Header() {
             {({
               account,
               chain,
-              openAccountModal,
               openChainModal,
               openConnectModal,
               mounted,
@@ -86,31 +86,32 @@ export function Header() {
                   {(() => {
                     if (!connected) {
                       return (
-                        <button
+                        <Button
                           onClick={openConnectModal}
-                          className="px-5 py-2.5 rounded-xl bg-phasor-500 text-surface-0 font-medium hover:bg-phasor-400 transition-colors shadow-glow hover:shadow-glow-lg"
+                          className="px-5 py-2.5 bg-phasor-500 text-surface-0 hover:bg-phasor-400 shadow-glow hover:shadow-glow-lg"
                         >
                           Connect Wallet
-                        </button>
+                        </Button>
                       );
                     }
 
                     if (chain.unsupported) {
                       return (
-                        <button
+                        <Button
                           onClick={openChainModal}
-                          className="px-5 py-2.5 rounded-xl bg-red-500 text-white font-medium hover:bg-red-400 transition-colors"
+                          variant="destructive"
                         >
                           Wrong network
-                        </button>
+                        </Button>
                       );
                     }
 
                     return (
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
                           onClick={openChainModal}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-3 hover:bg-surface-4 transition-colors"
+                          variant="outline"
+                          className="flex items-center gap-2"
                         >
                           {chain.hasIcon && (
                             <div className="w-5 h-5 rounded-full overflow-hidden">
@@ -128,11 +129,11 @@ export function Header() {
                           <span className="text-sm font-medium hidden sm:inline">
                             {chain.name}
                           </span>
-                        </button>
+                        </Button>
 
-                        <button
-                          onClick={openAccountModal}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-3 hover:bg-surface-4 transition-colors border border-surface-4"
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2"
                         >
                           <div className="w-5 h-5 rounded-full bg-phasor-gradient" />
                           <span className="text-sm font-medium">
@@ -143,7 +144,7 @@ export function Header() {
                               {account.displayBalance}
                             </span>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     );
                   })()}

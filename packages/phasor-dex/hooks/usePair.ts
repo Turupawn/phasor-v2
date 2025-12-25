@@ -1,5 +1,5 @@
 import { useReadContract, useReadContracts } from "wagmi";
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { CONTRACTS, FACTORY_ABI, PAIR_ABI } from "@/config";
 import { Token, Pool } from "@/types";
 import { sortTokens } from "@/lib/utils";
@@ -35,7 +35,7 @@ export function usePair(
   });
 
   const isValidPair =
-    pairAddress && pairAddress !== "0x0000000000000000000000000000000000000000";
+    pairAddress && pairAddress !== zeroAddress;
 
   // Get pair data
   const { data: pairData, isLoading: isPairDataLoading } = useReadContracts({

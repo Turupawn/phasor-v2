@@ -4,6 +4,7 @@ import React from "react";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
+import { Toaster } from "sonner";
 import { config } from "@/config";
 
 import "@rainbow-me/rainbowkit/styles.css";
@@ -51,6 +52,17 @@ export function Providers({ children }: ProvidersProps) {
           }}
         >
           {children}
+          <Toaster
+            position="bottom-right"
+            theme="dark"
+            toastOptions={{
+              style: {
+                background: 'hsl(240 10% 6%)',
+                border: '1px solid hsl(240 5% 18%)',
+                color: 'hsl(0 0% 98%)',
+              },
+            }}
+          />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

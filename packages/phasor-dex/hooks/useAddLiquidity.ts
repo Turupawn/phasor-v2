@@ -15,10 +15,15 @@ import { quote, getDeadline, calculatePoolShare } from "@/lib/utils";
 interface UseAddLiquidityResult {
   quote: AddLiquidityQuote | null;
   isLoading: boolean;
+  exists: boolean;
+  reserveA: bigint;
+  reserveB: bigint;
+  totalSupply: bigint;
   needsApprovalA: boolean;
   needsApprovalB: boolean;
   isApproving: boolean;
   isAdding: boolean;
+  isSuccess: boolean;
   approveA: () => Promise<void>;
   approveB: () => Promise<void>;
   addLiquidity: () => Promise<void>;
@@ -148,18 +153,16 @@ export function useAddLiquidity(
 
   const needsApprovalA = useMemo(() => {
     if (!tokenA || tokenA.address === NATIVE_TOKEN.address) return false;
-    if (!allowanceA || !parsedAmountA) return true;
-    const needs = allowanceA < parsedAmountA;
-    console.log('needsApprovalA:', { allowanceA: allowanceA?.toString(), parsedAmountA: parsedAmountA.toString(), needs });
-    return needs;
+    if (!parsedAmountA || parsedAmountA === BigInt(0)) return false;
+    if (allowanceA === undefined) return false; // Still loading
+    return allowanceA < parsedAmountA;
   }, [tokenA, allowanceA, parsedAmountA]);
 
   const needsApprovalB = useMemo(() => {
     if (!tokenB || tokenB.address === NATIVE_TOKEN.address) return false;
-    if (!allowanceB || !parsedAmountB) return true;
-    const needs = allowanceB < parsedAmountB;
-    console.log('needsApprovalB:', { allowanceB: allowanceB?.toString(), parsedAmountB: parsedAmountB.toString(), needs });
-    return needs;
+    if (!parsedAmountB || parsedAmountB === BigInt(0)) return false;
+    if (allowanceB === undefined) return false; // Still loading
+    return allowanceB < parsedAmountB;
   }, [tokenB, allowanceB, parsedAmountB]);
 
   // Contract writes
@@ -189,60 +192,46 @@ export function useAddLiquidity(
     hash: approveHashB,
   });
 
-  const { isLoading: isAddConfirming } = useWaitForTransactionReceipt({
+  const { isLoading: isAddConfirming, isSuccess: isAddSuccess } = useWaitForTransactionReceipt({
     hash: addLiquidityHash,
   });
 
   // Handle successful approval transactions
   useEffect(() => {
     if (isApproveSuccessA && approveHashA) {
-      console.log('Token A approval successful, refetching allowance...', {
-        hash: approveHashA,
-        tokenA: tokenA?.symbol,
-        currentAllowance: allowanceA?.toString()
-      });
       // Refetch allowance to update UI state with retry logic
       const doRefetch = async () => {
         // Wait a bit for blockchain state to propagate
         await new Promise(resolve => setTimeout(resolve, 500));
         let result = await refetchAllowanceA();
-        console.log('Token A allowance refetched (attempt 1):', result.data?.toString());
 
         // If still undefined, retry after another delay
         if (!result.data || result.data === BigInt(0)) {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          result = await refetchAllowanceA();
-          console.log('Token A allowance refetched (attempt 2):', result.data?.toString());
+          await refetchAllowanceA();
         }
       };
       doRefetch();
     }
-  }, [isApproveSuccessA, approveHashA, refetchAllowanceA, tokenA, allowanceA]);
+  }, [isApproveSuccessA, approveHashA, refetchAllowanceA]);
 
   useEffect(() => {
     if (isApproveSuccessB && approveHashB) {
-      console.log('Token B approval successful, refetching allowance...', {
-        hash: approveHashB,
-        tokenB: tokenB?.symbol,
-        currentAllowance: allowanceB?.toString()
-      });
       // Refetch allowance to update UI state with retry logic
       const doRefetch = async () => {
         // Wait a bit for blockchain state to propagate
         await new Promise(resolve => setTimeout(resolve, 500));
         let result = await refetchAllowanceB();
-        console.log('Token B allowance refetched (attempt 1):', result.data?.toString());
 
         // If still undefined, retry after another delay
         if (!result.data || result.data === BigInt(0)) {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          result = await refetchAllowanceB();
-          console.log('Token B allowance refetched (attempt 2):', result.data?.toString());
+          await refetchAllowanceB();
         }
       };
       doRefetch();
     }
-  }, [isApproveSuccessB, approveHashB, refetchAllowanceB, tokenB, allowanceB]);
+  }, [isApproveSuccessB, approveHashB, refetchAllowanceB]);
 
   const approveA = useCallback(async () => {
     if (!tokenA || !account) return;
@@ -332,7 +321,6 @@ export function useAddLiquidity(
         });
       }
     } catch (err: any) {
-      console.log('Add liquidity error:', err);
       setError(err?.message || "Add liquidity failed");
     }
   }, [
@@ -352,10 +340,15 @@ export function useAddLiquidity(
   return {
     quote: liquidityQuote,
     isLoading: reservesLoading,
+    exists,
+    reserveA,
+    reserveB,
+    totalSupply,
     needsApprovalA,
     needsApprovalB,
     isApproving: isApprovePendingA || isApprovePendingB || isApproveConfirmingA || isApproveConfirmingB,
     isAdding: isAddPending || isAddConfirming,
+    isSuccess: isAddSuccess,
     approveA,
     approveB,
     addLiquidity,

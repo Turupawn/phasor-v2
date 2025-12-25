@@ -3,12 +3,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, ChevronDown, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Plus, ChevronDown, AlertTriangle, ArrowDownUp, ExternalLink } from "lucide-react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatUnits } from "viem";
+import { toast } from "sonner";
 import { Token } from "@/types";
-import { useAddLiquidity, useTokenBalance, usePair } from "@/hooks";
+import { useAddLiquidity, useTokenBalance } from "@/hooks";
 import { formatTokenAmount, cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -117,15 +119,18 @@ export function AddLiquidityCard() {
   const [selectorOpen, setSelectorOpen] = useState<"A" | "B" | null>(null);
   const [activeField, setActiveField] = useState<"A" | "B">("A");
 
-  const { exists, isLoading: pairLoading } = usePair(tokenA, tokenB);
-
   const {
     quote,
     isLoading,
+    exists,
+    reserveA,
+    reserveB,
+    totalSupply,
     needsApprovalA,
     needsApprovalB,
     isApproving,
     isAdding,
+    isSuccess,
     approveA,
     approveB,
     addLiquidity,
@@ -136,8 +141,8 @@ export function AddLiquidityCard() {
 
   // Auto-calculate paired amount when pool exists
   useEffect(() => {
-    if (!exists || pairLoading) return;
-    
+    if (!exists || isLoading) return;
+
     if (activeField === "A" && amountA && tokenA && tokenB) {
       const calculated = calculateAmountB(amountA);
       if (calculated) setAmountB(calculated);
@@ -145,7 +150,38 @@ export function AddLiquidityCard() {
       const calculated = calculateAmountA(amountB);
       if (calculated) setAmountA(calculated);
     }
-  }, [amountA, amountB, activeField, exists, pairLoading, calculateAmountA, calculateAmountB, tokenA, tokenB]);
+  }, [amountA, amountB, activeField, exists, isLoading, calculateAmountA, calculateAmountB, tokenA, tokenB]);
+
+  // Show success toast with link to view pool
+  useEffect(() => {
+    if (isSuccess && tokenA && tokenB) {
+      toast.success(
+        <div className="flex items-center gap-3">
+          <div>
+            <p className="font-medium">Liquidity added successfully!</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {tokenA.symbol}/{tokenB.symbol}
+            </p>
+          </div>
+        </div>,
+        {
+          action: {
+            label: (
+              <span className="flex items-center gap-1">
+                View Pool <ExternalLink className="h-3 w-3" />
+              </span>
+            ),
+            onClick: () => router.push("/pools"),
+          },
+          duration: 10000,
+        }
+      );
+
+      // Reset form
+      setAmountA("");
+      setAmountB("");
+    }
+  }, [isSuccess, tokenA, tokenB, router]);
 
   const handleAmountAChange = (value: string) => {
     setActiveField("A");
@@ -157,16 +193,44 @@ export function AddLiquidityCard() {
     setAmountB(value);
   };
 
+  // Handle token switching
+  const handleSwitch = useCallback(() => {
+    setTokenA(tokenB);
+    setTokenB(tokenA);
+    setAmountA(amountB);
+    setAmountB(amountA);
+    setActiveField(activeField === "A" ? "B" : "A");
+  }, [tokenA, tokenB, amountA, amountB, activeField]);
+
+  // Handle token selection - swap positions if selecting the other token
   const handleSelectToken = (token: Token) => {
     if (selectorOpen === "A") {
-      setTokenA(token);
-      if (tokenB?.address === token.address) setTokenB(null);
+      if (tokenB?.address === token.address) {
+        // Swap the tokens
+        setTokenA(tokenB);
+        setTokenB(tokenA);
+        setAmountA(amountB);
+        setAmountB(amountA);
+        setActiveField("A");
+      } else {
+        setTokenA(token);
+        setAmountA("");
+        setAmountB("");
+      }
     } else {
-      setTokenB(token);
-      if (tokenA?.address === token.address) setTokenA(null);
+      if (tokenA?.address === token.address) {
+        // Swap the tokens
+        setTokenB(tokenA);
+        setTokenA(tokenB);
+        setAmountB(amountA);
+        setAmountA(amountB);
+        setActiveField("B");
+      } else {
+        setTokenB(token);
+        setAmountA("");
+        setAmountB("");
+      }
     }
-    setAmountA("");
-    setAmountB("");
   };
 
   // Button state
@@ -220,11 +284,14 @@ export function AddLiquidityCard() {
             onTokenSelect={() => setSelectorOpen("A")}
           />
 
-          {/* Plus Icon */}
-          <div className="flex justify-center -my-1">
-            <div className="p-2 rounded-xl bg-surface-4 border-4 border-surface-2">
-              <Plus className="h-5 w-5" />
-            </div>
+          {/* Switch Button */}
+          <div className="flex justify-center -my-1 relative z-10">
+            <button
+              onClick={handleSwitch}
+              className="p-2 rounded-xl bg-surface-4 border-4 border-surface-2 hover:bg-surface-5 transition-all"
+            >
+              <ArrowDownUp className="h-5 w-5" />
+            </button>
           </div>
 
           {/* Second Token */}
@@ -239,7 +306,7 @@ export function AddLiquidityCard() {
           {/* Pool Info */}
           {tokenA && tokenB && (
             <div className="p-4 rounded-xl bg-surface-3/50 space-y-3">
-              {!exists ? (
+              {!isLoading && !exists ? (
                 <div className="flex items-start gap-2 text-yellow-500">
                   <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
                   <div className="text-sm">
@@ -250,17 +317,24 @@ export function AddLiquidityCard() {
                     </p>
                   </div>
                 </div>
+              ) : isLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
               ) : (
                 <>
-                  <h4 className="font-medium">Pool Info</h4>
+                  <h4 className="font-medium">Current Price</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
                         {tokenA.symbol} per {tokenB.symbol}
                       </span>
-                      <span>
-                        {amountA && amountB && parseFloat(amountB) > 0
-                          ? (parseFloat(amountA) / parseFloat(amountB)).toFixed(6)
+                      <span className="font-medium">
+                        {reserveA > BigInt(0) && reserveB > BigInt(0)
+                          ? (Number(formatUnits(reserveA, tokenA.decimals)) /
+                             Number(formatUnits(reserveB, tokenB.decimals))).toFixed(6)
                           : "-"}
                       </span>
                     </div>
@@ -268,16 +342,17 @@ export function AddLiquidityCard() {
                       <span className="text-muted-foreground">
                         {tokenB.symbol} per {tokenA.symbol}
                       </span>
-                      <span>
-                        {amountA && amountB && parseFloat(amountA) > 0
-                          ? (parseFloat(amountB) / parseFloat(amountA)).toFixed(6)
+                      <span className="font-medium">
+                        {reserveA > BigInt(0) && reserveB > BigInt(0)
+                          ? (Number(formatUnits(reserveB, tokenB.decimals)) /
+                             Number(formatUnits(reserveA, tokenA.decimals))).toFixed(6)
                           : "-"}
                       </span>
                     </div>
-                    {quote && (
-                      <div className="flex justify-between">
+                    {quote && amountA && amountB && (
+                      <div className="flex justify-between pt-2 border-t border-surface-4">
                         <span className="text-muted-foreground">Share of pool</span>
-                        <span className="text-phasor-500">
+                        <span className="text-phasor-500 font-medium">
                           {quote.shareOfPool.toFixed(2)}%
                         </span>
                       </div>
