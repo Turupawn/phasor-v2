@@ -7,7 +7,7 @@ import { monad } from "./chains";
 
 export const config = getDefaultConfig({
   appName: "Phasor",
-  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID || "YOUR_PROJECT_ID", // TODO: Get from WalletConnect Cloud
+  projectId: process.env.DEFAULT_WALLET_CONNECT_ID || "YOUR_PROJECT_ID", // TODO: Get from WalletConnect Cloud
   chains: [monad],
   ssr: true,
 });

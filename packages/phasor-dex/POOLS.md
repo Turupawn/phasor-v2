@@ -204,7 +204,7 @@ Tests verify:
    ```
 
 3. Check browser console for errors
-4. Verify NEXT_PUBLIC_FACTORY_ADDRESS in `.env.local`
+4. Verify DEFAULT_FACTORY_ADDRESS in `.env.local`
 
 ### Loading forever
 

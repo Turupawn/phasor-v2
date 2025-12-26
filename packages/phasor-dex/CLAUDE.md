@@ -49,7 +49,7 @@ Before development, update these TODO items in `/config/chains.ts`:
 - Monad chain ID and RPC URLs
 - Deployed Factory and Router contract addresses  
 - Token addresses (WMON, USDC, etc.)
-- Set up `.env.local` with NEXT_PUBLIC_WALLET_CONNECT_ID
+- Set up `.env.local` with DEFAULT_WALLET_CONNECT_ID
 
 ### Type Definitions
 

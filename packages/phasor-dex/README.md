@@ -54,7 +54,7 @@ A modern, high-performance decentralized exchange frontend built for the Monad b
    
    Edit `.env.local` and add your WalletConnect Project ID:
    ```
-   NEXT_PUBLIC_WALLET_CONNECT_ID=your_project_id_here
+   DEFAULT_WALLET_CONNECT_ID=your_project_id_here
    ```
 
 4. **Configure your contracts**

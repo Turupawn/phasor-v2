@@ -42,12 +42,12 @@ The script deploys:
 After deployment, the script automatically updates `packages/phasor-dex/.env.local` with:
 
 ```env
-NEXT_PUBLIC_FACTORY_ADDRESS=0x...
-NEXT_PUBLIC_ROUTER_ADDRESS=0x...
+DEFAULT_FACTORY_ADDRESS=0x...
+DEFAULT_ROUTER_ADDRESS=0x...
 NEXT_PUBLIC_TKN1_ADDRESS=0x...
 NEXT_PUBLIC_TKN2_ADDRESS=0x...
-NEXT_PUBLIC_RPC_URL=http://127.0.0.1:8545
-NEXT_PUBLIC_CHAIN_ID=10143
+DEFAULT_RPC_URL=http://127.0.0.1:8545
+DEFAULT_CHAIN_ID=10143
 ```
 
 The frontend is configured to read these values in `packages/phasor-dex/config/chains.ts`.
@@ -95,8 +95,8 @@ npx @usecannon/cli build --rpc-url http://127.0.0.1:8545 --chain-id 10143 --wipe
 Copy the deployed addresses to `packages/phasor-dex/.env.local`:
 
 ```env
-NEXT_PUBLIC_FACTORY_ADDRESS=<factory-address>
-NEXT_PUBLIC_ROUTER_ADDRESS=<router-address>
+DEFAULT_FACTORY_ADDRESS=<factory-address>
+DEFAULT_ROUTER_ADDRESS=<router-address>
 NEXT_PUBLIC_TKN1_ADDRESS=<tkn1-address>
 NEXT_PUBLIC_TKN2_ADDRESS=<tkn2-address>
 ```

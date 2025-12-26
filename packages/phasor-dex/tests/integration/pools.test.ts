@@ -4,7 +4,7 @@ import { CONTRACTS, FACTORY_ABI, PAIR_ABI } from '@/config';
 import { DEFAULT_TOKENS } from '@/config/chains';
 
 describe('Pools Integration Tests', () => {
-  const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || 'http://127.0.0.1:8545';
+  const RPC_URL = process.env.DEFAULT_RPC_URL || 'http://127.0.0.1:8545';
 
   const publicClient = createPublicClient({
     transport: http(RPC_URL),

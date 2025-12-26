@@ -52,12 +52,12 @@ Tests are configured in [vitest.config.ts](vitest.config.ts):
 ### Environment Variables
 
 The tests automatically load contract addresses from `.env.local`:
-- `NEXT_PUBLIC_FACTORY_ADDRESS` - UniswapV2Factory address
-- `NEXT_PUBLIC_ROUTER_ADDRESS` - UniswapV2Router02 address
+- `DEFAULT_FACTORY_ADDRESS` - UniswapV2Factory address
+- `DEFAULT_ROUTER_ADDRESS` - UniswapV2Router02 address
 - `NEXT_PUBLIC_TKN1_ADDRESS` - Test token 1 address
 - `NEXT_PUBLIC_TKN2_ADDRESS` - Test token 2 address
-- `NEXT_PUBLIC_RPC_URL` - RPC endpoint (default: http://127.0.0.1:8545)
-- `NEXT_PUBLIC_CHAIN_ID` - Chain ID (default: 10143)
+- `DEFAULT_RPC_URL` - RPC endpoint (default: http://127.0.0.1:8545)
+- `DEFAULT_CHAIN_ID` - Chain ID (default: 10143)
 
 ### Prerequisites
 
@@ -120,7 +120,7 @@ import { CONTRACTS } from '@/config/chains';
 
 describe('My Test Suite', () => {
   const publicClient = createPublicClient({
-    transport: http(process.env.NEXT_PUBLIC_RPC_URL || 'http://127.0.0.1:8545'),
+    transport: http(process.env.DEFAULT_RPC_URL || 'http://127.0.0.1:8545'),
   });
 
   it('should test something', async () => {

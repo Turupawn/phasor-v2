@@ -65,8 +65,8 @@ const PAIR_ABI = [
 ] as const;
 
 describe('Add Liquidity Integration Tests', () => {
-  const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || 'http://127.0.0.1:8545';
-  const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '10143');
+  const RPC_URL = process.env.DEFAULT_RPC_URL || 'http://127.0.0.1:8545';
+  const CHAIN_ID = parseInt(process.env.DEFAULT_CHAIN_ID || '10143');
 
   // Test account (Anvil's first account)
   const TEST_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';

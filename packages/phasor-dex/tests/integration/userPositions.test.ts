@@ -4,7 +4,7 @@ import { CONTRACTS, PAIR_ABI } from '@/config';
 import { erc20Abi } from 'viem';
 
 describe('User Positions Integration Tests', () => {
-  const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || 'http://127.0.0.1:8545';
+  const RPC_URL = process.env.DEFAULT_RPC_URL || 'http://127.0.0.1:8545';
   const TEST_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'; // Anvil's first account
 
   const publicClient = createPublicClient({

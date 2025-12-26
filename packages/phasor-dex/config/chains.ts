@@ -7,7 +7,7 @@ import { Address } from "viem";
 // TODO: Update these values with actual Monad chain details
 
 export const monad = defineChain({
-  id: 143, // TODO: Replace with actual Monad chain ID
+  id: Number(process.env.DEFAULT_CHAIN_ID) || 143, // TODO: Replace with actual Monad chain ID
   name: "Monad",
   nativeCurrency: {
     decimals: 18,
@@ -16,7 +16,7 @@ export const monad = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["http://127.0.0.1:8545"], // TODO: Replace with actual RPC
+      http: [process.env.DEFAULT_RPC_URL || "http://www.rpc-monad.xyz"], // TODO: Replace with actual RPC
       webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
     },
     public: {
@@ -40,8 +40,8 @@ export const monad = defineChain({
 
 export const CONTRACTS = {
   // Core Uniswap V2 contracts - from environment variables
-  FACTORY: (process.env.NEXT_PUBLIC_FACTORY_ADDRESS) as Address,
-  ROUTER: (process.env.NEXT_PUBLIC_ROUTER_ADDRESS) as Address,
+  FACTORY: (process.env.DEFAULT_FACTORY_ADDRESS) as Address,
+  ROUTER: (process.env.DEFAULT_ROUTER_ADDRESS) as Address,
 
   // Wrapped MON (WMON) address
   WMON: (process.env.NEXT_PUBLIC_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
