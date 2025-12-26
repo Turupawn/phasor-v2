@@ -163,17 +163,17 @@ export function RemoveLiquidityCard() {
           {!isConnected ? (
             <ConnectButton.Custom>
               {({ openConnectModal }) => (
-                <Button size="xl" className="w-full" onClick={openConnectModal}>
+                <Button size="lg" className="w-full" onClick={openConnectModal}>
                   Connect Wallet
                 </Button>
               )}
             </ConnectButton.Custom>
           ) : !tokenA || !tokenB ? (
-            <Button size="xl" className="w-full" disabled>
+            <Button size="lg" className="w-full" disabled>
               Select pair
             </Button>
           ) : (
-            <Button size="xl" className="w-full" disabled>
+            <Button size="lg" className="w-full" disabled>
               No position found
             </Button>
           )}

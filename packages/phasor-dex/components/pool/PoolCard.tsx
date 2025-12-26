@@ -38,8 +38,8 @@ export function PoolCard({ pool }: PoolCardProps) {
   };
 
   // Determine if pool is new/inactive (no reserves)
-  const isNewPool = reserve0 === 0n || reserve1 === 0n;
-  const hasLiquidity = reserve0 > 0n && reserve1 > 0n;
+  const isNewPool = reserve0 === BigInt(0) || reserve1 === BigInt(0);
+  const hasLiquidity = reserve0 > BigInt(0) && reserve1 > BigInt(0);
 
   // Calculate a simple liquidity indicator based on reserves
   // This gives users an idea of pool depth without USD pricing

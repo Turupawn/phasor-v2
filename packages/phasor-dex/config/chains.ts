@@ -43,6 +43,9 @@ export const CONTRACTS = {
   FACTORY: (process.env.NEXT_PUBLIC_FACTORY_ADDRESS) as Address,
   ROUTER: (process.env.NEXT_PUBLIC_ROUTER_ADDRESS) as Address,
 
+  // Wrapped MON (WMON) address
+  WMON: (process.env.NEXT_PUBLIC_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
+
   // Test tokens from Cannon deployment - from environment variables
   TKN1: (process.env.NEXT_PUBLIC_TKN1_ADDRESS || "0x6F6f570F45833E249e27022648a26F4076F48f78") as Address,
   TKN2: (process.env.NEXT_PUBLIC_TKN2_ADDRESS || "0xCA8c8688914e0F7096c920146cd0Ad85cD7Ae8b9") as Address,
@@ -65,7 +68,7 @@ export const DEFAULT_TOKENS: Token[] = tokenList.tokens
     name: token.name,
     decimals: token.decimals,
     logoURI: token.logoURI,
-    tags: token.tags,
+    tags: (token as any).tags || [],
   }));
 
 // Native token representation (for UI)
