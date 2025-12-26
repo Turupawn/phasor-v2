@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
-import { Address } from "viem";
 import { Token } from "@/types";
 import { DEFAULT_TOKENS, NATIVE_TOKEN } from "@/config";
 import { useTokenListStore } from "@/lib/store";
@@ -17,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-
 interface TokenSelectorProps {
   open: boolean;
   onClose: () => void;
@@ -131,30 +129,6 @@ export function TokenSelector({
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
           />
-        </div>
-
-        {/* Common tokens */}
-        <div className="flex flex-wrap gap-2">
-          {[NATIVE_TOKEN, ...DEFAULT_TOKENS.slice(0, 4)].map((token) => (
-            <button
-              key={token.address}
-              onClick={() => handleSelect(token)}
-              disabled={selectedToken?.address === token.address}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-full border border-surface-4 transition-all",
-                selectedToken?.address === token.address
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:border-phasor-500/50 hover:bg-surface-3"
-              )}
-            >
-              <div className="w-5 h-5 rounded-full bg-surface-4 flex items-center justify-center">
-                <span className="text-xs font-bold text-phasor-500">
-                  {token.symbol.charAt(0)}
-                </span>
-              </div>
-              <span className="text-sm font-medium">{token.symbol}</span>
-            </button>
-          ))}
         </div>
 
         {/* Token List */}

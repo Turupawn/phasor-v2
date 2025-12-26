@@ -23,6 +23,10 @@ export interface Pool {
   reserve1: bigint;
   totalSupply: bigint;
   fee: number; // 0.3% = 30
+  // Optional metrics - may not be available for new/inactive pools
+  tvlUSD?: number;
+  volume24hUSD?: number;
+  apr?: number;
 }
 
 export interface SwapQuote {

@@ -192,7 +192,7 @@ export function SwapCard() {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto border-gradient glow-effect">
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4 glow-effect">
         <CardContent className="p-4 space-y-2">
           {/* Header */}
           <div className="flex items-center justify-between mb-2">
@@ -211,7 +211,7 @@ export function SwapCard() {
           />
 
           {/* Switch Button */}
-          <div className="flex justify-center -my-2 relative z-10">
+          <div className="flex justify-center -my-2">
             <button
               onClick={handleSwitch}
               className="p-2 rounded-xl bg-surface-4 border-4 border-surface-2 hover:bg-surface-5 transition-all swap-arrow"
@@ -274,29 +274,38 @@ export function SwapCard() {
           )}
 
           {/* Action Button */}
-          {!isConnected ? (
-            <ConnectButton.Custom>
-              {({ openConnectModal }) => (
-                <Button
-                  size="xl"
-                  className="w-full"
-                  onClick={openConnectModal}
-                >
-                  Connect Wallet
-                </Button>
-              )}
-            </ConnectButton.Custom>
-          ) : (
-            <Button
-              size="xl"
-              className="w-full"
-              disabled={buttonState.disabled}
-              onClick={handleButtonClick}
-              isLoading={isApproving || isSwapping}
-            >
-              {buttonState.text}
-            </Button>
-          )}
+          <div>
+            {!isConnected ? (
+              <ConnectButton.Custom>
+                {({ openConnectModal }) => (
+                  <Button
+                    className="w-full py-6 bg-phasor-gradient text-white font-semibold"
+                    onClick={openConnectModal}
+                  >
+                    Connect Wallet
+                  </Button>
+                )}
+              </ConnectButton.Custom>
+            ) : (
+              <Button
+                className={cn(
+                  "w-full py-6 bg-phasor-gradient text-white font-semibold",
+                  buttonState.disabled && "opacity-50 cursor-not-allowed"
+                )}
+                onClick={handleButtonClick}
+                disabled={buttonState.disabled}
+              >
+                {isApproving || isSwapping ? (
+                  <div className="flex items-center gap-2 justify-center">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    {buttonState.text}
+                  </div>
+                ) : (
+                  buttonState.text
+                )}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 

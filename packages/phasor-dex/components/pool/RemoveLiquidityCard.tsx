@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Token } from "@/types";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { TokenSelector } from "@/components/common/TokenSelector";
@@ -36,8 +36,8 @@ export function RemoveLiquidityCard() {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto border-gradient glow-effect">
-        <CardHeader className="pb-4">
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4 glow-effect">
+        <CardContent className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
@@ -48,13 +48,12 @@ export function RemoveLiquidityCard() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <CardTitle>Remove Liquidity</CardTitle>
+              <h2 className="text-xl font-semibold">Remove Liquidity</h2>
             </div>
             <SettingsPopover />
           </div>
-        </CardHeader>
 
-        <CardContent className="space-y-6">
+          <div className="space-y-6">
           {/* Token Selection */}
           <div className="space-y-3">
             <label className="text-sm text-muted-foreground">Select pair</label>
@@ -178,6 +177,7 @@ export function RemoveLiquidityCard() {
               No position found
             </Button>
           )}
+          </div>
         </CardContent>
       </Card>
 

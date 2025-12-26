@@ -21,8 +21,8 @@ args = ["<%= contracts.UniswapV2Factory.address %>", "<%= settings.WMON %>"]
 
 [deploy.TKN1]
 artifact = "packages/core/contracts/test/ERC20.sol:ERC20"
-args = [100000000000000]
+args = ["<%= BigInt(10000000000000000000000000000000) %>"]
 
 [deploy.TKN2]
 artifact = "packages/core/contracts/test/ERC20.sol:ERC20"
-args = [100000000000000]
+args = ["<%= BigInt(10000000000000000000000000000000) %>"]

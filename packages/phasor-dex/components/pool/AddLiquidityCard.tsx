@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Token } from "@/types";
 import { useAddLiquidity, useTokenBalance } from "@/hooks";
 import { formatTokenAmount, cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TokenSelector } from "@/components/common/TokenSelector";
@@ -256,8 +256,8 @@ export function AddLiquidityCard() {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto border-gradient glow-effect">
-        <CardHeader className="pb-4">
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4 glow-effect">
+        <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
@@ -268,13 +268,12 @@ export function AddLiquidityCard() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <CardTitle>Add Liquidity</CardTitle>
+              <h2 className="text-xl font-semibold">Add Liquidity</h2>
             </div>
             <SettingsPopover />
           </div>
-        </CardHeader>
 
-        <CardContent className="space-y-3">
+          <div className="space-y-3">
           {/* First Token */}
           <TokenInput
             label="Token A"
@@ -285,7 +284,7 @@ export function AddLiquidityCard() {
           />
 
           {/* Switch Button */}
-          <div className="flex justify-center -my-1 relative z-10">
+          <div className="flex justify-center -my-1">
             <button
               onClick={handleSwitch}
               className="p-2 rounded-xl bg-surface-4 border-4 border-surface-2 hover:bg-surface-5 transition-all"
@@ -374,22 +373,34 @@ export function AddLiquidityCard() {
           {!isConnected ? (
             <ConnectButton.Custom>
               {({ openConnectModal }) => (
-                <Button size="xl" className="w-full" onClick={openConnectModal}>
+                <Button
+                  className="w-full py-6 bg-phasor-gradient text-white font-semibold"
+                  onClick={openConnectModal}
+                >
                   Connect Wallet
                 </Button>
               )}
             </ConnectButton.Custom>
           ) : (
             <Button
-              size="xl"
-              className="w-full"
+              className={cn(
+                "w-full py-6 bg-phasor-gradient text-white font-semibold",
+                buttonState.disabled && "opacity-50 cursor-not-allowed"
+              )}
               disabled={buttonState.disabled}
               onClick={handleButtonClick}
-              isLoading={isApproving || isAdding}
             >
-              {buttonState.text}
+              {isApproving || isAdding ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  {buttonState.text}
+                </div>
+              ) : (
+                buttonState.text
+              )}
             </Button>
           )}
+          </div>
         </CardContent>
       </Card>
 

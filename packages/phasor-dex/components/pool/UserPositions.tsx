@@ -6,7 +6,7 @@ import { useAccount } from "wagmi";
 import { Wallet } from "lucide-react";
 import { UserPosition } from "@/types";
 import { formatTokenAmount, cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -83,7 +83,7 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (!isConnected) {
     return (
-      <Card className="border-surface-4">
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
         <CardContent className="py-12 text-center">
           <Wallet className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="font-medium mb-2">Connect your wallet</h3>
@@ -97,13 +97,13 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (isLoading) {
     return (
-      <Card className="border-surface-4">
-        <CardHeader>
-          <CardTitle>Your Positions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+        <CardContent className="p-6 space-y-4">
+          <h2 className="text-xl font-semibold">Your Positions</h2>
+          <div className="space-y-3">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
         </CardContent>
       </Card>
     );
@@ -111,7 +111,7 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (positions.length === 0) {
     return (
-      <Card className="border-surface-4">
+      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
         <CardContent className="py-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-3 flex items-center justify-center">
             <svg
@@ -141,19 +141,19 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
   }
 
   return (
-    <Card className="border-surface-4">
-      <CardHeader>
+    <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+      <CardContent className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <CardTitle>Your Positions</CardTitle>
+          <h2 className="text-xl font-semibold">Your Positions</h2>
           <span className="text-sm text-muted-foreground">
             {positions.length} position{positions.length !== 1 ? "s" : ""}
           </span>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {positions.map((position, index) => (
-          <PositionRow key={index} position={position} />
-        ))}
+        <div className="space-y-3">
+          {positions.map((position, index) => (
+            <PositionRow key={index} position={position} />
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

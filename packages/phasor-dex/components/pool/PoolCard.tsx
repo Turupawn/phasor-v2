@@ -14,11 +14,48 @@ interface PoolCardProps {
 }
 
 export function PoolCard({ pool }: PoolCardProps) {
-  const { token0, token1, reserve0, reserve1 } = pool;
+  const { token0, token1, reserve0, reserve1, tvlUSD, volume24hUSD, apr } = pool;
+
+  // Format currency values
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined) return null;
+    if (value === 0) return "$0";
+    if (value < 0.01) return "<$0.01";
+    if (value >= 1_000_000) {
+      return `$${(value / 1_000_000).toFixed(2)}M`;
+    }
+    if (value >= 1_000) {
+      return `$${(value / 1_000).toFixed(2)}K`;
+    }
+    return `$${value.toFixed(2)}`;
+  };
+
+  // Format APR percentage
+  const formatAPR = (value: number | undefined) => {
+    if (value === undefined) return null;
+    if (value === 0) return "0%";
+    return `${value.toFixed(2)}%`;
+  };
+
+  // Determine if pool is new/inactive (no reserves)
+  const isNewPool = reserve0 === 0n || reserve1 === 0n;
+  const hasLiquidity = reserve0 > 0n && reserve1 > 0n;
+
+  // Calculate a simple liquidity indicator based on reserves
+  // This gives users an idea of pool depth without USD pricing
+  const getLiquidityIndicator = () => {
+    if (!hasLiquidity) return null;
+
+    // Format reserves in a readable way
+    const reserve0Formatted = formatTokenAmount(reserve0, token0.decimals, 2);
+    const reserve1Formatted = formatTokenAmount(reserve1, token1.decimals, 2);
+
+    return `${reserve0Formatted} ${token0.symbol} / ${reserve1Formatted} ${token1.symbol}`;
+  };
 
   return (
-    <Card className="pool-card border-surface-4 hover:border-phasor-500/30 transition-all duration-300">
-      <CardContent className="p-5">
+    <Card className="pool-card border-surface-4 hover:border-phasor-500/30 transition-all duration-300 w-full max-w-md mx-auto bg-surface-2">
+      <CardContent className="p-6">
         <div className="flex items-start justify-between">
           {/* Token Pair */}
           <div className="flex items-center gap-3">
@@ -63,21 +100,43 @@ export function PoolCard({ pool }: PoolCardProps) {
           </div>
 
           {/* APR Badge */}
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-green-500/10 text-green-500 text-sm">
-            <TrendingUp className="h-3 w-3" />
-            <span>--% APR</span>
-          </div>
+          {formatAPR(apr) ? (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-green-500/10 text-green-500 text-sm">
+              <TrendingUp className="h-3 w-3" />
+              <span>{formatAPR(apr)} APR</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-4 text-muted-foreground text-xs">
+              <span>{isNewPool ? "New pool" : "No data yet"}</span>
+            </div>
+          )}
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div>
-            <p className="text-sm text-muted-foreground">TVL</p>
-            <p className="font-medium">$--</p>
+            <p className="text-sm text-muted-foreground">Liquidity</p>
+            {formatCurrency(tvlUSD) ? (
+              <p className="font-medium">{formatCurrency(tvlUSD)}</p>
+            ) : hasLiquidity ? (
+              <p className="text-sm font-medium text-green-500">Active</p>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                Add liquidity first
+              </p>
+            )}
           </div>
           <div>
             <p className="text-sm text-muted-foreground">24h Volume</p>
-            <p className="font-medium">$--</p>
+            {formatCurrency(volume24hUSD) ? (
+              <p className="font-medium">{formatCurrency(volume24hUSD)}</p>
+            ) : hasLiquidity ? (
+              <p className="text-sm text-muted-foreground">Trading enabled</p>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                No trades yet
+              </p>
+            )}
           </div>
         </div>
 

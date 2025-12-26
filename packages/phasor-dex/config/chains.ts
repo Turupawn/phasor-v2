@@ -7,7 +7,7 @@ import { Address } from "viem";
 // TODO: Update these values with actual Monad chain details
 
 export const monad = defineChain({
-  id: 10143, // TODO: Replace with actual Monad chain ID
+  id: 143, // TODO: Replace with actual Monad chain ID
   name: "Monad",
   nativeCurrency: {
     decimals: 18,
@@ -43,11 +43,6 @@ export const CONTRACTS = {
   FACTORY: (process.env.NEXT_PUBLIC_FACTORY_ADDRESS) as Address,
   ROUTER: (process.env.NEXT_PUBLIC_ROUTER_ADDRESS) as Address,
 
-  // Common tokens
-  WMON: "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541" as Address, // Wrapped MON
-  USDC: "0xAA292E8611aDF267e563f334Ee42320aC96D0463" as Address,
-  USDT: "0x5c74c94173F05dA1720953407cbb920F3DF9f887" as Address,
-
   // Test tokens from Cannon deployment - from environment variables
   TKN1: (process.env.NEXT_PUBLIC_TKN1_ADDRESS || "0x6F6f570F45833E249e27022648a26F4076F48f78") as Address,
   TKN2: (process.env.NEXT_PUBLIC_TKN2_ADDRESS || "0xCA8c8688914e0F7096c920146cd0Ad85cD7Ae8b9") as Address,
@@ -75,11 +70,11 @@ export const DEFAULT_TOKENS: Token[] = tokenList.tokens
 
 // Native token representation (for UI)
 export const NATIVE_TOKEN: Token = {
-  address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
-  symbol: "MON",
-  name: "Monad",
-  decimals: 18,
-  logoURI: "/tokens/mon.svg",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, //TODO: CHANGE THIS TO ZERO ADDRESS
+      name: "Monad",
+      symbol: "MON",
+      decimals: 18,
+      logoURI: "https://raw.githubusercontent.com/monad-crypto/token-list/refs/heads/main/mainnet/MON/logo.svg"
 };
 
 // ============================================
