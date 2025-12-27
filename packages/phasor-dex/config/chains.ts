@@ -2,35 +2,32 @@ import { defineChain } from "viem";
 import { Address } from "viem";
 
 // ============================================
-// MONAD CHAIN CONFIGURATION
+// MONAD TESTNET CONFIGURATION
 // ============================================
-// TODO: Update these values with actual Monad chain details
 
 export const monad = defineChain({
-  id: Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID) || 143, // TODO: Replace with actual Monad chain ID
-  name: "Monad",
+  id: 10143,
+  name: "Monad Testnet",
   nativeCurrency: {
     decimals: 18,
     name: "Monad",
-    symbol: "MON", // TODO: Confirm native token symbol
+    symbol: "MON",
   },
   rpcUrls: {
     default: {
-      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "http://127.0.0.1:8545"], // TODO: Replace with actual RPC
-      webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
+      http: ["https://testnet-rpc.monad.xyz"],
     },
     public: {
-      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "http://127.0.0.1:8545"], // TODO: Replace with actual RPC
-      webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
+      http: ["https://testnet-rpc.monad.xyz"],
     },
   },
   blockExplorers: {
     default: {
-      name: "Monad Explorer",
-      url: "https://explorer.monad.xyz", // TODO: Replace with actual explorer
+      name: "Monad Testnet Explorer",
+      url: "https://testnet-explorer.monad.xyz",
     },
   },
-  testnet: false, // TODO: Set based on network
+  testnet: true,
 });
 
 // ============================================
