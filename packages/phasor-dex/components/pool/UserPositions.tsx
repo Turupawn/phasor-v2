@@ -18,18 +18,18 @@ function PositionRow({ position }: PositionRowProps) {
   const { pool, share, token0Amount, token1Amount } = position;
 
   return (
-    <div className="p-4 rounded-xl bg-surface-3 hover:bg-surface-4 transition-colors">
+    <div className="p-4 rounded-xl bg-muted hover:bg-secondary transition-colors border border-border">
       <div className="flex items-center justify-between">
         {/* Pair */}
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
-            <div className="w-8 h-8 rounded-full bg-surface-4 border-2 border-surface-3 flex items-center justify-center z-10">
-              <span className="text-xs font-bold text-phasor-500">
+            <div className="w-8 h-8 rounded-full bg-secondary border-2 border-card flex items-center justify-center z-10">
+              <span className="text-xs font-bold">
                 {pool.token0.symbol.charAt(0)}
               </span>
             </div>
-            <div className="w-8 h-8 rounded-full bg-surface-4 border-2 border-surface-3 flex items-center justify-center">
-              <span className="text-xs font-bold text-phasor-500">
+            <div className="w-8 h-8 rounded-full bg-secondary border-2 border-card flex items-center justify-center">
+              <span className="text-xs font-bold">
                 {pool.token1.symbol.charAt(0)}
               </span>
             </div>
@@ -83,7 +83,7 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (!isConnected) {
     return (
-      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+      <Card className="w-full max-w-md mx-auto">
         <CardContent className="py-12 text-center">
           <Wallet className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="font-medium mb-2">Connect your wallet</h3>
@@ -97,7 +97,7 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+      <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-6 space-y-4">
           <h2 className="text-xl font-semibold">Your Positions</h2>
           <div className="space-y-3">
@@ -111,9 +111,9 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
 
   if (positions.length === 0) {
     return (
-      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+      <Card className="w-full max-w-md mx-auto">
         <CardContent className="py-12 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-3 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted flex items-center justify-center">
             <svg
               className="w-8 h-8 text-muted-foreground"
               fill="none"
@@ -141,7 +141,7 @@ export function UserPositions({ positions = [], isLoading }: UserPositionsProps)
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4">
+    <Card className="w-full max-w-md mx-auto">
       <CardContent className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Your Positions</h2>

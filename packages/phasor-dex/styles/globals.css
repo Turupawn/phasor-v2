@@ -4,26 +4,27 @@
 
 @layer base {
   :root {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 187 100% 50%;
-    --primary-foreground: 240 10% 4%;
-    --secondary: 240 5% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 18%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 328 100% 50%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 18%;
-    --input: 240 5% 18%;
-    --ring: 187 100% 50%;
-    --radius: 0.75rem;
+    /* Terminal-inspired grayscale theme */
+    --background: 0 0% 7%;        /* #121212 - dark terminal background */
+    --foreground: 0 0% 85%;       /* #d9d9d9 - soft white text */
+    --card: 0 0% 10%;             /* #1a1a1a - slightly lighter cards */
+    --card-foreground: 0 0% 85%;
+    --popover: 0 0% 8%;           /* #141414 - popover bg */
+    --popover-foreground: 0 0% 85%;
+    --primary: 0 0% 75%;          /* #bfbfbf - light gray accent */
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 15%;        /* #262626 - darker gray */
+    --secondary-foreground: 0 0% 85%;
+    --muted: 0 0% 20%;            /* #333333 - muted elements */
+    --muted-foreground: 0 0% 50%; /* #808080 - muted text */
+    --accent: 0 0% 65%;           /* #a6a6a6 - medium gray accent */
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 0% 60%;      /* #999999 - gray destructive */
+    --destructive-foreground: 0 0% 10%;
+    --border: 0 0% 25%;           /* #404040 - subtle borders */
+    --input: 0 0% 15%;            /* #262626 - input background */
+    --ring: 0 0% 50%;             /* #808080 - focus ring */
+    --radius: 0.25rem;            /* Minimal border radius */
   }
 }
 
@@ -43,16 +44,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(240 10% 6%);
+  background: hsl(0 0% 10%);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(240 5% 25%);
-  border-radius: 4px;
+  background: hsl(0 0% 25%);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(240 5% 35%);
+  background: hsl(0 0% 35%);
 }
 
 /* Phasor-specific utilities */
@@ -129,7 +130,7 @@
   position: fixed;
   border-radius: 50%;
   filter: blur(100px);
-  opacity: 0.3;
+  opacity: 0.05;
   pointer-events: none;
   z-index: -1;
 }
@@ -137,7 +138,7 @@
 .gradient-orb-1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(0, 217, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   top: -200px;
   right: -200px;
 }
@@ -145,7 +146,7 @@
 .gradient-orb-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(121, 40, 202, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
   bottom: -150px;
   left: -150px;
 }

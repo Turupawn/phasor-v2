@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Github, Twitter } from "lucide-react";
 
 const FOOTER_LINKS = [
@@ -25,26 +26,22 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-surface-4/50 bg-surface-1/50 mt-auto">
+    <footer className="border-t border-border bg-background mt-auto">
       <div className="container py-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-phasor-gradient flex items-center justify-center">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                  <path d="M2 17l10 5 10-5" />
-                  <path d="M2 12l10 5 10-5" />
-                </svg>
+              <div className="w-8 h-8 flex items-center justify-center">
+                <Image
+                  src="/logo-transparent.png"
+                  alt="Phasor Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
               </div>
-              <span className="text-lg font-display font-bold text-gradient">
+              <span className="text-lg font-display font-bold">
                 Phasor
               </span>
             </div>
@@ -55,13 +52,13 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <a
                 href="#"
-                className="p-2 rounded-lg bg-surface-3 hover:bg-surface-4 transition-colors"
+                className="p-2 rounded border border-border bg-card hover:bg-muted transition-colors"
               >
                 <Twitter className="h-4 w-4" />
               </a>
               <a
                 href="#"
-                className="p-2 rounded-lg bg-surface-3 hover:bg-surface-4 transition-colors"
+                className="p-2 rounded border border-border bg-card hover:bg-muted transition-colors"
               >
                 <Github className="h-4 w-4" />
               </a>
@@ -101,13 +98,13 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-surface-4/50 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Phasor. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
             Built on{" "}
-            <span className="text-phasor-500 font-medium">Monad</span>
+            <span className="font-medium">Monad</span>
           </p>
         </div>
       </div>

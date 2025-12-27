@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, JetBrains_Mono, Inter } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import { Header, Footer } from "@/components/layout";
 import "@/styles/globals.css";
@@ -10,15 +10,15 @@ const inter = Inter({
   display: "swap",
 });
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-display",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -43,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} min-h-screen flex flex-col`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} min-h-screen flex flex-col`}
       >
         <Providers>
           {/* Background Effects */}

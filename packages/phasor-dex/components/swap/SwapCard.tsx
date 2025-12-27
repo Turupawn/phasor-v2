@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TokenSelector } from "@/components/common/TokenSelector";
 import { SettingsPopover } from "@/components/common/SettingsPopover";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 
 interface TokenInputProps {
   label: string;
@@ -43,7 +44,7 @@ function TokenInput({
   };
 
   return (
-    <div className="rounded-2xl bg-surface-3 p-4 space-y-2">
+    <div className="rounded border border-border bg-muted p-4 space-y-2">
       <div className="flex justify-between items-center">
         <span className="text-sm text-muted-foreground">{label}</span>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -55,7 +56,7 @@ function TokenInput({
               {showMaxButton && token && balance > BigInt(0) && (
                 <button
                   onClick={handleMax}
-                  className="text-phasor-500 hover:text-phasor-400 font-medium"
+                  className="text-foreground hover:text-primary font-medium"
                 >
                   MAX
                 </button>
@@ -89,7 +90,7 @@ function TokenInput({
         >
           {token ? (
             <>
-              <div className="w-6 h-6 rounded-full bg-surface-4 flex items-center justify-center overflow-hidden">
+              <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                 {token.logoURI ? (
                   <Image
                     src={token.logoURI}
@@ -99,7 +100,7 @@ function TokenInput({
                     className="rounded-full object-cover"
                   />
                 ) : (
-                  <span className="text-xs font-bold text-phasor-500">
+                  <span className="text-xs font-bold">
                     {token.symbol.charAt(0)}
                   </span>
                 )}
@@ -107,7 +108,7 @@ function TokenInput({
               <span className="font-medium">{token.symbol}</span>
             </>
           ) : (
-            <span className="text-phasor-500">Select token</span>
+            <span className="text-foreground">Select token</span>
           )}
           <ChevronDown className="h-4 w-4" />
         </Button>
@@ -192,8 +193,9 @@ export function SwapCard() {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4 glow-effect">
-        <CardContent className="p-4 space-y-2">
+      <BackgroundGradient variant="white" className="w-full max-w-md mx-auto">
+        <Card className="w-full max-w-md mx-auto">
+          <CardContent className="p-4 space-y-2">
           {/* Header */}
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold">Swap</h2>
@@ -214,7 +216,7 @@ export function SwapCard() {
           <div className="flex justify-center -my-2">
             <button
               onClick={handleSwitch}
-              className="p-2 rounded-xl bg-surface-4 border-4 border-surface-2 hover:bg-surface-5 transition-all swap-arrow"
+              className="p-2 rounded border border-border bg-card hover:bg-muted transition-all swap-arrow"
             >
               <ArrowDown className="h-5 w-5" />
             </button>
@@ -232,7 +234,7 @@ export function SwapCard() {
 
           {/* Price Info */}
           {quote && inputToken && outputToken && (
-            <div className="space-y-2 p-3 rounded-xl bg-surface-3/50 text-sm">
+            <div className="space-y-2 p-3 rounded border border-border bg-secondary text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Rate</span>
                 <span>
@@ -268,7 +270,7 @@ export function SwapCard() {
 
           {/* Error Message */}
           {error && (
-            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+            <div className="p-3 rounded border border-red-500/20 bg-red-500/10 text-red-500 text-sm">
               {error}
             </div>
           )}
@@ -279,7 +281,7 @@ export function SwapCard() {
               <ConnectButton.Custom>
                 {({ openConnectModal }) => (
                   <Button
-                    className="w-full py-6 bg-phasor-gradient text-white font-semibold"
+                    className="w-full py-6 font-semibold"
                     onClick={openConnectModal}
                   >
                     Connect Wallet
@@ -289,7 +291,7 @@ export function SwapCard() {
             ) : (
               <Button
                 className={cn(
-                  "w-full py-6 bg-phasor-gradient text-white font-semibold",
+                  "w-full py-6 font-semibold",
                   buttonState.disabled && "opacity-50 cursor-not-allowed"
                 )}
                 onClick={handleButtonClick}
@@ -308,6 +310,7 @@ export function SwapCard() {
           </div>
         </CardContent>
       </Card>
+      </BackgroundGradient>
 
       {/* Token Selector Modal */}
       <TokenSelector

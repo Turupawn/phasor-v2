@@ -36,7 +36,7 @@ export function RemoveLiquidityCard() {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto bg-surface-2 border-surface-4 glow-effect">
+      <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

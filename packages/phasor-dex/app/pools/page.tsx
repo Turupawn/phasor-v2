@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,8 +13,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PoolsPage() {
   const [search, setSearch] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
   const { pools, isLoading } = usePools();
   const { positions, isLoading: isPositionsLoading } = useUserPositions();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Filter pools based on search
   const filteredPools = useMemo(() => {
@@ -70,7 +75,7 @@ export default function PoolsPage() {
 
           {/* All Pools */}
           <TabsContent value="all" className="space-y-4">
-            {isLoading ? (
+            {!isMounted || isLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-64 w-full" />
                 <Skeleton className="h-64 w-full" />

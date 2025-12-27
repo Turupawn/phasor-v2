@@ -16,11 +16,11 @@ export const monad = defineChain({
   },
   rpcUrls: {
     default: {
-      http: [process.env.DEFAULT_RPC_URL || "http://www.rpc-monad.xyz"], // TODO: Replace with actual RPC
+      http: [process.env.DEFAULT_RPC_URL || "https://www.rpc.monad.xyz"], // TODO: Replace with actual RPC
       webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
     },
     public: {
-      http: ["https://rpc.monad.xyz"], // TODO: Replace with actual RPC
+      http: ["https://www.rpc.monad.xyz"], // TODO: Replace with actual RPC
       webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
     },
   },
