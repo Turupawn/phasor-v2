@@ -15,11 +15,19 @@ interface PositionRowProps {
 }
 
 function PositionRow({ position }: PositionRowProps) {
-  const { pool, share, token0Amount, token1Amount } = position;
+  const { pool, share, token0Amount, token1Amount, balance } = position;
+
+  // Calculate pool value and APR
+  const poolFee = pool.fee / 10000; // Convert basis points to percentage (30 -> 0.003)
+  const volume24h = pool.volume24hUSD || 0;
+  const tvl = pool.tvlUSD || 0;
+
+  // Estimated APR based on 24h volume (annualized)
+  const estimatedAPR = tvl > 0 ? ((volume24h * poolFee * 365) / tvl) * 100 : 0;
 
   return (
     <div className="p-4 rounded-xl bg-muted hover:bg-secondary transition-colors border border-border">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-3">
         {/* Pair */}
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
@@ -38,26 +46,44 @@ function PositionRow({ position }: PositionRowProps) {
             <p className="font-medium">
               {pool.token0.symbol}/{pool.token1.symbol}
             </p>
-            <p className="text-sm text-muted-foreground">
-              {share.toFixed(4)}% share
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {share.toFixed(4)}% share
+              </p>
+              {estimatedAPR > 0 && (
+                <span className="text-xs bg-green-500/10 text-green-500 px-2 py-0.5 rounded">
+                  {estimatedAPR.toFixed(2)}% APR
+                </span>
+              )}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Value */}
-        <div className="text-right">
-          <p className="font-medium">$--</p>
-          <p className="text-sm text-muted-foreground">
-            {formatTokenAmount(token0Amount, pool.token0.decimals, 4)}{" "}
-            {pool.token0.symbol} +{" "}
-            {formatTokenAmount(token1Amount, pool.token1.decimals, 4)}{" "}
-            {pool.token1.symbol}
-          </p>
+      {/* Position Details */}
+      <div className="space-y-2 mb-3 p-3 rounded-lg bg-background/50">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Pooled {pool.token0.symbol}</span>
+          <span className="font-medium">
+            {formatTokenAmount(token0Amount, pool.token0.decimals, 6)}
+          </span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Pooled {pool.token1.symbol}</span>
+          <span className="font-medium">
+            {formatTokenAmount(token1Amount, pool.token1.decimals, 6)}
+          </span>
+        </div>
+        <div className="flex justify-between text-sm pt-2 border-t border-border">
+          <span className="text-muted-foreground">LP Tokens</span>
+          <span className="font-medium font-mono text-xs">
+            {balance ? formatTokenAmount(balance, 18, 8) : "0"}
+          </span>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 mt-3">
+      <div className="flex gap-2">
         <Link href="/pools/add" className="flex-1">
           <Button variant="outline" size="sm" className="w-full">
             Add

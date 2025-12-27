@@ -5,13 +5,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, ChevronDown, AlertTriangle, ArrowDownUp, ExternalLink } from "lucide-react";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatUnits } from "viem";
 import { toast } from "sonner";
 import { Token } from "@/types";
 import { useAddLiquidity, useTokenBalance } from "@/hooks";
 import { formatTokenAmount, cn } from "@/lib/utils";
+import { monad } from "@/config";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,14 +112,21 @@ function TokenInput({
 
 export function AddLiquidityCard() {
   const router = useRouter();
-  const { isConnected } = useAccount();
+  const { isConnected, chain } = useAccount();
+  const { switchChain } = useSwitchChain();
 
+  const [mounted, setMounted] = useState(false);
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
   const [amountA, setAmountA] = useState("");
   const [amountB, setAmountB] = useState("");
   const [selectorOpen, setSelectorOpen] = useState<"A" | "B" | null>(null);
   const [activeField, setActiveField] = useState<"A" | "B">("A");
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     quote,
@@ -234,9 +242,13 @@ export function AddLiquidityCard() {
     }
   };
 
+  // Check if on wrong chain
+  const isWrongChain = isConnected && chain?.id !== monad.id;
+
   // Button state
   const buttonState = (() => {
     if (!isConnected) return { text: "Connect Wallet", disabled: true, action: null };
+    if (isWrongChain) return { text: `Switch to ${monad.name}`, disabled: false, action: "switchChain" };
     if (!tokenA || !tokenB) return { text: "Select tokens", disabled: true, action: null };
     if (!amountA || !amountB || amountA === "0" || amountB === "0") {
       return { text: "Enter amounts", disabled: true, action: null };
@@ -250,9 +262,15 @@ export function AddLiquidityCard() {
   })();
 
   const handleButtonClick = async () => {
-    if (buttonState.action === "approveA") await approveA();
-    else if (buttonState.action === "approveB") await approveB();
-    else if (buttonState.action === "add") await addLiquidity();
+    if (buttonState.action === "switchChain") {
+      switchChain({ chainId: monad.id });
+    } else if (buttonState.action === "approveA") {
+      await approveA();
+    } else if (buttonState.action === "approveB") {
+      await approveB();
+    } else if (buttonState.action === "add") {
+      await addLiquidity();
+    }
   };
 
   return (
@@ -372,7 +390,14 @@ export function AddLiquidityCard() {
           )}
 
           {/* Action Button */}
-          {!isConnected ? (
+          {!mounted ? (
+            <Button
+              className="w-full py-6 font-semibold"
+              disabled
+            >
+              Loading...
+            </Button>
+          ) : !isConnected ? (
             <ConnectButton.Custom>
               {({ openConnectModal }) => (
                 <Button

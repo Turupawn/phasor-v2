@@ -7,7 +7,7 @@ import { Address } from "viem";
 // TODO: Update these values with actual Monad chain details
 
 export const monad = defineChain({
-  id: Number(process.env.DEFAULT_CHAIN_ID) || 143, // TODO: Replace with actual Monad chain ID
+  id: Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID) || 143, // TODO: Replace with actual Monad chain ID
   name: "Monad",
   nativeCurrency: {
     decimals: 18,
@@ -16,11 +16,11 @@ export const monad = defineChain({
   },
   rpcUrls: {
     default: {
-      http: [process.env.DEFAULT_RPC_URL || "https://www.rpc.monad.xyz"], // TODO: Replace with actual RPC
+      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "http://127.0.0.1:8545"], // TODO: Replace with actual RPC
       webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
     },
     public: {
-      http: ["https://www.rpc.monad.xyz"], // TODO: Replace with actual RPC
+      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "http://127.0.0.1:8545"], // TODO: Replace with actual RPC
       webSocket: ["wss://ws.monad.xyz"], // TODO: Replace with actual WS
     },
   },
@@ -40,16 +40,27 @@ export const monad = defineChain({
 
 export const CONTRACTS = {
   // Core Uniswap V2 contracts - from environment variables
-  FACTORY: (process.env.DEFAULT_FACTORY_ADDRESS) as Address,
-  ROUTER: (process.env.DEFAULT_ROUTER_ADDRESS) as Address,
+  FACTORY: process.env.NEXT_PUBLIC_DEFAULT_FACTORY_ADDRESS as Address,
+  ROUTER: process.env.NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS as Address,
 
   // Wrapped MON (WMON) address
-  WMON: (process.env.NEXT_PUBLIC_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
-
-  // Test tokens from Cannon deployment - from environment variables
-  TKN1: (process.env.NEXT_PUBLIC_TKN1_ADDRESS || "0x6F6f570F45833E249e27022648a26F4076F48f78") as Address,
-  TKN2: (process.env.NEXT_PUBLIC_TKN2_ADDRESS || "0xCA8c8688914e0F7096c920146cd0Ad85cD7Ae8b9") as Address,
+  WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
 } as const;
+
+// Debug logging
+if (typeof window !== 'undefined') {
+  console.log('[CONTRACTS] Configuration:', {
+    FACTORY: CONTRACTS.FACTORY,
+    ROUTER: CONTRACTS.ROUTER,
+    WMON: CONTRACTS.WMON,
+    RPC_URL: process.env.NEXT_PUBLIC_DEFAULT_RPC_URL,
+    ENV_VARS: {
+      FACTORY_ENV: process.env.NEXT_PUBLIC_DEFAULT_FACTORY_ADDRESS,
+      ROUTER_ENV: process.env.NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS,
+      RPC_ENV: process.env.NEXT_PUBLIC_DEFAULT_RPC_URL,
+    }
+  });
+}
 
 // ============================================
 // DEFAULT TOKENS LIST (from token list standard)

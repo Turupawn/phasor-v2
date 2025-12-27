@@ -10,7 +10,14 @@ import { config } from "@/config";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 // Custom RainbowKit theme matching Phasor grayscale branding
 const phasorTheme = darkTheme({

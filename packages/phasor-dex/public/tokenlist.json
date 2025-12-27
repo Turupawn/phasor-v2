@@ -4,7 +4,7 @@
   "keywords": [
     "monad mainnet"
   ],
-  "timestamp": "2025-12-26T02:24:27.223Z",
+  "timestamp": "2025-12-27T08:41:01.321Z",
   "tokens": [
     {
       "chainId": 143,
@@ -354,7 +354,7 @@
     },
     {
       "chainId": 143,
-      "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       "name": "TKN1",
       "symbol": "TKN1",
       "decimals": 18,
@@ -365,7 +365,7 @@
     },
     {
       "chainId": 143,
-      "address": "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
+      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
       "name": "TKN2",
       "symbol": "TKN2",
       "decimals": 18,

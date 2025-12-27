@@ -5,15 +5,15 @@ import { FocusCards } from "@/components/ui/focus-cards";
 const focusCards = [
   {
     title: "Lightning Fast Swaps",
-    src: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop",
+    src: "/focus-wave-1.svg",
   },
   {
     title: "Deep Liquidity Pools",
-    src: "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?w=800&auto=format&fit=crop",
+    src: "/focus-wave-2.svg",
   },
   {
     title: "Powered by Monad",
-    src: "https://images.unsplash.com/photo-1639762681057-408e52192e55?w=800&auto=format&fit=crop",
+    src: "/focus-wave-3.svg",
   },
 ];
 

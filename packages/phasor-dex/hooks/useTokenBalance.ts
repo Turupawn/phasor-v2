@@ -12,9 +12,9 @@ interface UseTokenBalanceResult {
 
 export function useTokenBalance(token: Token | null): UseTokenBalanceResult {
   const { address: account } = useAccount();
-  
-  const isNative = token?.address === NATIVE_TOKEN.address;
-  
+
+  const isNative = token?.address?.toLowerCase() === NATIVE_TOKEN.address.toLowerCase();
+
   // Native balance
   const {
     data: nativeBalance,
@@ -26,12 +26,13 @@ export function useTokenBalance(token: Token | null): UseTokenBalanceResult {
       enabled: !!account && isNative,
     },
   });
-  
+
   // ERC20 balance
   const {
     data: tokenBalance,
     isLoading: tokenLoading,
     refetch: refetchToken,
+    error: tokenError,
   } = useReadContract({
     address: token?.address as Address,
     abi: erc20Abi,

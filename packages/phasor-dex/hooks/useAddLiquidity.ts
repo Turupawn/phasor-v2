@@ -170,19 +170,44 @@ export function useAddLiquidity(
     writeContract: writeApproveA,
     data: approveHashA,
     isPending: isApprovePendingA,
+    error: writeErrorA,
   } = useWriteContract();
 
   const {
     writeContract: writeApproveB,
     data: approveHashB,
     isPending: isApprovePendingB,
+    error: writeErrorB,
   } = useWriteContract();
 
   const {
     writeContract: writeAddLiquidity,
     data: addLiquidityHash,
     isPending: isAddPending,
+    error: writeErrorAddLiquidity,
   } = useWriteContract();
+
+  // Log write errors
+  useEffect(() => {
+    if (writeErrorA) {
+      console.error('[useAddLiquidity] Write error A:', writeErrorA);
+      setError(writeErrorA.message);
+    }
+  }, [writeErrorA]);
+
+  useEffect(() => {
+    if (writeErrorB) {
+      console.error('[useAddLiquidity] Write error B:', writeErrorB);
+      setError(writeErrorB.message);
+    }
+  }, [writeErrorB]);
+
+  useEffect(() => {
+    if (writeErrorAddLiquidity) {
+      console.error('[useAddLiquidity] Write error add liquidity:', writeErrorAddLiquidity);
+      setError(writeErrorAddLiquidity.message);
+    }
+  }, [writeErrorAddLiquidity]);
 
   const { isLoading: isApproveConfirmingA, isSuccess: isApproveSuccessA } = useWaitForTransactionReceipt({
     hash: approveHashA,
@@ -237,6 +262,13 @@ export function useAddLiquidity(
     if (!tokenA || !account) return;
     setError(null);
 
+    console.log('[approveA] Attempting approval:', {
+      token: tokenA.symbol,
+      tokenAddress: tokenA.address,
+      router: CONTRACTS.ROUTER,
+      amount: parsedAmountA.toString(),
+    });
+
     try {
       writeApproveA({
         address: tokenA.address,
@@ -245,6 +277,7 @@ export function useAddLiquidity(
         args: [CONTRACTS.ROUTER, parsedAmountA],
       });
     } catch (err: any) {
+      console.error('[approveA] Error:', err);
       setError(err?.message || "Approval failed");
     }
   }, [tokenA, account, parsedAmountA, writeApproveA]);
@@ -270,10 +303,19 @@ export function useAddLiquidity(
     setError(null);
 
     const txDeadline = getDeadline(deadline);
-    
+
     // Calculate minimum amounts with slippage
     const amountAMin = (parsedAmountA * BigInt(10000 - slippageTolerance)) / BigInt(10000);
     const amountBMin = (parsedAmountB * BigInt(10000 - slippageTolerance)) / BigInt(10000);
+
+    console.log('[addLiquidity] Attempting to add liquidity:', {
+      tokenA: tokenA.symbol,
+      tokenB: tokenB.symbol,
+      amountA: parsedAmountA.toString(),
+      amountB: parsedAmountB.toString(),
+      router: CONTRACTS.ROUTER,
+      deadline: txDeadline.toString(),
+    });
 
     try {
       const isANative = tokenA.address === NATIVE_TOKEN.address;
@@ -286,6 +328,7 @@ export function useAddLiquidity(
         const ethAmount = isANative ? parsedAmountA : parsedAmountB;
         const ethMin = isANative ? amountAMin : amountBMin;
 
+        console.log('[addLiquidity] Adding liquidity with ETH');
         writeAddLiquidity({
           address: CONTRACTS.ROUTER,
           abi: ROUTER_ABI,
@@ -295,6 +338,7 @@ export function useAddLiquidity(
           gas: BigInt(5000000),
         });
       } else {
+        console.log('[addLiquidity] Adding liquidity with ERC20 tokens');
         writeAddLiquidity({
           address: CONTRACTS.ROUTER,
           abi: ROUTER_ABI,
@@ -321,6 +365,7 @@ export function useAddLiquidity(
         });
       }
     } catch (err: any) {
+      console.error('[addLiquidity] Error:', err);
       setError(err?.message || "Add liquidity failed");
     }
   }, [
