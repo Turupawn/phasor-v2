@@ -15,7 +15,7 @@ interface PositionRowProps {
 }
 
 function PositionRow({ position }: PositionRowProps) {
-  const { pool, share, token0Amount, token1Amount, balance } = position;
+  const { pool, share, token0Amount, token1Amount, liquidity } = position;
 
   // Calculate pool value and APR
   const poolFee = pool.fee / 10000; // Convert basis points to percentage (30 -> 0.003)
@@ -77,7 +77,7 @@ function PositionRow({ position }: PositionRowProps) {
         <div className="flex justify-between text-sm pt-2 border-t border-border">
           <span className="text-muted-foreground">LP Tokens</span>
           <span className="font-medium font-mono text-xs">
-            {balance ? formatTokenAmount(balance, 18, 8) : "0"}
+            {liquidity ? formatTokenAmount(liquidity, 18, 8) : "0"}
           </span>
         </div>
       </div>

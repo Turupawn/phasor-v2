@@ -44,7 +44,7 @@ export const CONTRACTS = {
   ROUTER: process.env.NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS as Address,
 
   // Wrapped MON (WMON) address
-  WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
+  WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701") as Address,
 } as const;
 
 // Debug logging

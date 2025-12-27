@@ -54,10 +54,10 @@ export function NetworkDebug() {
           <div className="font-mono text-xs break-all">{CONTRACTS.WMON}</div>
         </div>
 
-        {chain?.unsupported && (
+        {chain && chain.id !== 143 && chain.id !== 10143 && (
           <div className="mt-4 p-3 bg-red-500/10 border border-red-500/50 rounded text-red-500 text-sm">
             <strong>Warning:</strong> You're connected to an unsupported network.
-            Please switch to chain ID 143.
+            Please switch to chain ID 143 or 10143.
           </div>
         )}
 

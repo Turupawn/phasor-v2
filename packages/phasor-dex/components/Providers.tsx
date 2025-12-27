@@ -5,8 +5,10 @@ import Image from "next/image";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme, AvatarComponent } from "@rainbow-me/rainbowkit";
+import { ApolloProvider } from "@apollo/client/react";
 import { Toaster } from "sonner";
 import { config } from "@/config";
+import { apolloClient } from "@/lib/apollo-client";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -113,31 +115,33 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={customTheme}
-          modalSize="compact"
-          avatar={CustomAvatar}
-          appInfo={{
-            appName: "Phasor",
-            learnMoreUrl: "https://phasor.exchange",
-          }}
-        >
-          {children}
-          <Toaster
-            position="bottom-right"
-            theme="dark"
-            toastOptions={{
-              style: {
-                background: 'hsl(240 10% 6%)',
-                border: '1px solid hsl(240 5% 18%)',
-                color: 'hsl(0 0% 98%)',
-              },
+    <ApolloProvider client={apolloClient}>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider
+            theme={customTheme}
+            modalSize="compact"
+            avatar={CustomAvatar}
+            appInfo={{
+              appName: "Phasor",
+              learnMoreUrl: "https://phasor.exchange",
             }}
-          />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+          >
+            {children}
+            <Toaster
+              position="bottom-right"
+              theme="dark"
+              toastOptions={{
+                style: {
+                  background: 'hsl(240 10% 6%)',
+                  border: '1px solid hsl(240 5% 18%)',
+                  color: 'hsl(0 0% 98%)',
+                },
+              }}
+            />
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ApolloProvider>
   );
 }

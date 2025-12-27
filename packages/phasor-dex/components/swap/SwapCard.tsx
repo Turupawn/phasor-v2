@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { ArrowDown, ChevronDown, Loader2 } from "lucide-react";
 import { useAccount } from "wagmi";
@@ -119,11 +119,17 @@ function TokenInput({
 
 export function SwapCard() {
   const { isConnected, address } = useAccount();
+  const [mounted, setMounted] = useState(false);
 
   const [inputToken, setInputToken] = useState<Token | null>(null);
   const [outputToken, setOutputToken] = useState<Token | null>(null);
   const [inputAmount, setInputAmount] = useState("");
   const [selectorOpen, setSelectorOpen] = useState<"input" | "output" | null>(null);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     quote,
@@ -277,14 +283,15 @@ export function SwapCard() {
 
           {/* Action Button */}
           <div>
-            {!isConnected ? (
+            {!mounted || !isConnected ? (
               <ConnectButton.Custom>
                 {({ openConnectModal }) => (
                   <Button
                     className="w-full py-6 font-semibold"
                     onClick={openConnectModal}
+                    disabled={!mounted}
                   >
-                    Connect Wallet
+                    {mounted ? "Connect Wallet" : "Loading..."}
                   </Button>
                 )}
               </ConnectButton.Custom>
