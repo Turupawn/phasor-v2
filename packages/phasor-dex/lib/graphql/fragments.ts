@@ -1,3 +1,5 @@
+"use client";
+
 import { gql } from "@apollo/client";
 
 export const TOKEN_FIELDS = gql`

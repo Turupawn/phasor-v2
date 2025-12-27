@@ -1,3 +1,5 @@
+"use client";
+
 import { gql } from "@apollo/client";
 import { PAIR_FIELDS, PAIR_DAY_DATA_FIELDS, PAIR_HOUR_DATA_FIELDS } from "./fragments";
 
