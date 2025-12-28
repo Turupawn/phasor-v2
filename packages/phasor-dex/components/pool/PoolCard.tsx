@@ -155,14 +155,27 @@ export function PoolCard({ pool }: PoolCardProps) {
 
         {/* Actions */}
         <div className="flex gap-2 mt-4">
-          <Link href="/pools/add" className="flex-1" onClick={(e) => e.stopPropagation()}>
-            <Button variant="outline" className="w-full">
-              Add Liquidity
-            </Button>
-          </Link>
-          <Link href="/swap" className="flex-1" onClick={(e) => e.stopPropagation()}>
-            <Button className="w-full">Swap</Button>
-          </Link>
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = "/pools/add";
+            }}
+          >
+            Add Liquidity
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = "/swap";
+            }}
+          >
+            Swap
+          </Button>
         </div>
       </CardContent>
     </Card>

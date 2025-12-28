@@ -46,6 +46,8 @@ export function usePoolsFromSubgraph(
       orderDirection: "desc",
     },
     pollInterval: 30000, // Refresh every 30 seconds
+    errorPolicy: "all", // Return partial data on error
+    fetchPolicy: "cache-first", // Use cache to avoid errors on initial load
   });
 
   const pools = useMemo(() => {
