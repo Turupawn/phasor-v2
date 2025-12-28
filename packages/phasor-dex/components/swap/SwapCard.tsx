@@ -140,6 +140,8 @@ export function SwapCard() {
     approve,
     swap,
     error,
+    gasEstimate,
+    gasCost,
   } = useSwap(inputToken, outputToken, inputAmount);
 
   // Handle token switch
@@ -245,7 +247,7 @@ export function SwapCard() {
                 <span className="text-muted-foreground">Rate</span>
                 <span>
                   1 {inputToken.symbol} ≈{" "}
-                  {(Number(quote.amountOut) / Number(quote.amountIn) * 
+                  {(Number(quote.amountOut) / Number(quote.amountIn) *
                     Math.pow(10, inputToken.decimals - outputToken.decimals)).toFixed(6)}{" "}
                   {outputToken.symbol}
                 </span>
@@ -271,6 +273,14 @@ export function SwapCard() {
                   {outputToken.symbol}
                 </span>
               </div>
+              {gasEstimate && gasCost && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Estimated gas</span>
+                  <span>
+                    {gasEstimate} ({gasCost})
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

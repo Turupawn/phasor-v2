@@ -4,13 +4,14 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useReadContract,
+  useGasPrice,
 } from "wagmi";
 import { Address, erc20Abi, parseUnits, formatUnits } from "viem";
 import { Token, AddLiquidityQuote } from "@/types";
 import { CONTRACTS, ROUTER_ABI, NATIVE_TOKEN } from "@/config";
 import { useOrderedReserves } from "./usePair";
 import { useSettingsStore, useTransactionStore } from "@/lib/store";
-import { quote, getDeadline, calculatePoolShare } from "@/lib/utils";
+import { quote, getDeadline, calculatePoolShare, calculateGasCost, formatGasEstimate } from "@/lib/utils";
 
 interface UseAddLiquidityResult {
   quote: AddLiquidityQuote | null;
@@ -31,6 +32,8 @@ interface UseAddLiquidityResult {
   // For the UI to calculate the other amount
   calculateAmountB: (amountA: string) => string;
   calculateAmountA: (amountB: string) => string;
+  gasEstimate?: string;
+  gasCost?: string;
 }
 
 export function useAddLiquidity(
@@ -335,7 +338,6 @@ export function useAddLiquidity(
           functionName: "addLiquidityETH",
           args: [token.address, tokenAmount, tokenMin, ethMin, account, txDeadline],
           value: ethAmount,
-          gas: BigInt(5000000),
         });
       } else {
         console.log('[addLiquidity] Adding liquidity with ERC20 tokens');
@@ -353,7 +355,6 @@ export function useAddLiquidity(
             account,
             txDeadline,
           ],
-          gas: BigInt(5000000),
         });
       }
 
@@ -382,6 +383,41 @@ export function useAddLiquidity(
     addTransaction,
   ]);
 
+  // Get current gas price
+  const { data: gasPrice } = useGasPrice();
+
+  // Static gas estimates based on Uniswap V2 typical usage
+  // ETH liquidity: ~200,000 gas
+  // Token liquidity: ~250,000 gas (includes two token transfers)
+  const estimatedGas = useMemo(() => {
+    if (!liquidityQuote || !tokenA || !tokenB) return undefined;
+
+    const isANative = tokenA.address === NATIVE_TOKEN.address;
+    const isBNative = tokenB.address === NATIVE_TOKEN.address;
+
+    // ETH involved adds are cheaper
+    if (isANative || isBNative) {
+      return BigInt(200000);
+    }
+    // Token to token adds
+    return BigInt(250000);
+  }, [liquidityQuote, tokenA, tokenB]);
+
+  // Calculate gas cost display
+  const { gasEstimate, gasCost } = useMemo(() => {
+    if (!estimatedGas || !gasPrice) {
+      return { gasEstimate: undefined, gasCost: undefined };
+    }
+
+    const formatted = formatGasEstimate(estimatedGas);
+    const cost = calculateGasCost(estimatedGas, gasPrice);
+
+    return {
+      gasEstimate: `~${formatted}`,
+      gasCost: cost.costInUSD || `${parseFloat(cost.costInNative).toFixed(6)} MON`,
+    };
+  }, [estimatedGas, gasPrice]);
+
   return {
     quote: liquidityQuote,
     isLoading: reservesLoading,
@@ -400,5 +436,7 @@ export function useAddLiquidity(
     error,
     calculateAmountB,
     calculateAmountA,
+    gasEstimate,
+    gasCost,
   };
 }

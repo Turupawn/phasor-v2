@@ -146,6 +146,8 @@ export function AddLiquidityCard() {
     error,
     calculateAmountB,
     calculateAmountA,
+    gasEstimate,
+    gasCost,
   } = useAddLiquidity(tokenA, tokenB, amountA, amountB);
 
   // Auto-calculate paired amount when pool exists
@@ -373,6 +375,14 @@ export function AddLiquidityCard() {
                         <span className="text-muted-foreground">Share of pool</span>
                         <span className="font-medium">
                           {quote.shareOfPool.toFixed(2)}%
+                        </span>
+                      </div>
+                    )}
+                    {gasEstimate && gasCost && (
+                      <div className="flex justify-between pt-2 border-t border-border">
+                        <span className="text-muted-foreground">Estimated gas</span>
+                        <span className="font-medium">
+                          {gasEstimate} ({gasCost})
                         </span>
                       </div>
                     )}

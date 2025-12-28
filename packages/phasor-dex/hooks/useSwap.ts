@@ -4,6 +4,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useReadContract,
+  useGasPrice,
 } from "wagmi";
 import { Address, erc20Abi, parseUnits, formatUnits } from "viem";
 import { Token, SwapQuote } from "@/types";
@@ -16,6 +17,8 @@ import {
   calculatePriceImpact,
   calculateMinimumReceived,
   getDeadline,
+  calculateGasCost,
+  formatGasEstimate,
 } from "@/lib/utils";
 
 interface UseSwapResult {
@@ -27,6 +30,8 @@ interface UseSwapResult {
   approve: () => Promise<void>;
   swap: () => Promise<void>;
   error: string | null;
+  gasEstimate?: string;
+  gasCost?: string;
 }
 
 export function useSwap(
@@ -215,6 +220,38 @@ export function useSwap(
     }
   }, [inputToken, outputToken, account, quote, deadline, writeSwap, swapHash, addTransaction]);
 
+  // Get current gas price
+  const { data: gasPrice } = useGasPrice();
+
+  // Static gas estimates based on Uniswap V2 typical usage
+  // ETH swaps: ~127,000 gas
+  // Token swaps: ~150,000 gas (includes approval check overhead)
+  const estimatedGas = useMemo(() => {
+    if (!quote || !inputToken || !outputToken) return undefined;
+
+    // ETH involved swaps are cheaper
+    if (inputToken.address === NATIVE_TOKEN.address || outputToken.address === NATIVE_TOKEN.address) {
+      return BigInt(127000);
+    }
+    // Token to token swaps
+    return BigInt(150000);
+  }, [quote, inputToken, outputToken]);
+
+  // Calculate gas cost display
+  const { gasEstimate, gasCost } = useMemo(() => {
+    if (!estimatedGas || !gasPrice) {
+      return { gasEstimate: undefined, gasCost: undefined };
+    }
+
+    const formatted = formatGasEstimate(estimatedGas);
+    const cost = calculateGasCost(estimatedGas, gasPrice);
+
+    return {
+      gasEstimate: `~${formatted}`,
+      gasCost: cost.costInUSD || `${parseFloat(cost.costInNative).toFixed(6)} MON`,
+    };
+  }, [estimatedGas, gasPrice]);
+
   return {
     quote,
     isLoading: reservesLoading,
@@ -224,5 +261,7 @@ export function useSwap(
     approve,
     swap,
     error,
+    gasEstimate,
+    gasCost,
   };
 }

@@ -13,6 +13,25 @@ interface UsePoolDetailResult {
   error: Error | null;
 }
 
+interface SubgraphToken {
+  id: string;
+  symbol: string;
+  name: string;
+  decimals: string;
+}
+
+interface SubgraphPairData {
+  pair: {
+    id: string;
+    token0: SubgraphToken;
+    token1: SubgraphToken;
+    reserve0: string;
+    reserve1: string;
+    reserveUSD: string;
+    volumeUSD: string;
+  } | null;
+}
+
 /**
  * Hybrid hook to fetch detailed data for a single pool
  * Combines direct contract calls with subgraph enrichment
@@ -47,7 +66,7 @@ export function usePoolDetail(poolAddress: string): UsePoolDetailResult {
   });
 
   // Fetch enrichment data from subgraph
-  const { data: subgraphData, loading: isSubgraphLoading, error: subgraphError } = useQuery(GET_POOL, {
+  const { data: subgraphData, loading: isSubgraphLoading, error: subgraphError } = useQuery<SubgraphPairData>(GET_POOL, {
     variables: { id: poolAddress.toLowerCase() },
     skip: !poolAddress,
   });
