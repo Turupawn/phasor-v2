@@ -1,4 +1,2 @@
-V2_TOKEN_SUBGRAPH_NAME="v2-tokens-monad-testnet"
-V2_SUBGRAPH_NAME="uniswap-v2-monad-testnet"
 ETHEREUM_NETWORK=monad-testnet
 ETHEREUM_RPC_URL=https://testnet-rpc.monad.xyz

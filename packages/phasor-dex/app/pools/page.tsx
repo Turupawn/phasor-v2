@@ -8,15 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyPoolState, PoolCard } from "@/components/pool/PoolCard";
 import { UserPositions } from "@/components/pool/UserPositions";
-import { usePoolsFromSubgraph } from "@/hooks/usePoolsFromSubgraph";
-import { useUserPositionsFromSubgraph } from "@/hooks/useUserPositionsFromSubgraph";
+import { usePoolsHybrid } from "@/hooks/usePoolsHybrid";
+import { useUserPositions } from "@/hooks/useUserPositions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PoolsPage() {
   const [search, setSearch] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-  const { pools, isLoading } = usePoolsFromSubgraph();
-  const { positions, isLoading: isPositionsLoading } = useUserPositionsFromSubgraph();
+  const { pools, isLoading } = usePoolsHybrid();
+  const { positions, isLoading: isPositionsLoading } = useUserPositions();
 
   useEffect(() => {
     setIsMounted(true);
