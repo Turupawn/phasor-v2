@@ -15,11 +15,6 @@ export function usePools() {
 
   const totalPairs = Number(pairsLength ?? 0);
 
-  // Debug logging
-  if (typeof window !== 'undefined' && pairsLength !== undefined) {
-    console.log('[usePools] Factory allPairsLength:', totalPairs, 'Factory address:', CONTRACTS.FACTORY);
-  }
-
   // Get all pair addresses
   const pairAddressContracts = useMemo(() => {
     if (totalPairs === 0) return [];
@@ -71,10 +66,15 @@ export function usePools() {
     });
   }, [pairAddresses]);
 
-  const { data: pairData, isLoading: isPairDataLoading } = useReadContracts({
+  const { data: pairData, isLoading: isPairDataLoading, refetch: refetchPairData } = useReadContracts({
     contracts: pairDataContracts,
     query: {
       enabled: pairDataContracts.length > 0,
+      refetchInterval: 2000, // Refetch every 2 seconds
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      staleTime: 0, // Data is immediately considered stale
+      gcTime: 0, // Don't cache data
     },
   });
 
@@ -142,12 +142,13 @@ export function usePools() {
     }
 
     if (typeof window !== 'undefined' && pools.length > 0) {
-      console.log('[usePools] Successfully processed pools:', pools.length, pools.map(p => ({
+      console.log(`[usePools] ${new Date().toISOString()} - Successfully processed pools:`, pools.length, pools.map(p => ({
         address: p.address,
         token0: p.token0.symbol,
         token1: p.token1.symbol,
         reserve0: p.reserve0.toString(),
-        reserve1: p.reserve1.toString()
+        reserve1: p.reserve1.toString(),
+        totalSupply: p.totalSupply.toString()
       })));
     }
 
@@ -158,5 +159,6 @@ export function usePools() {
     pools,
     isLoading: isPairsLengthLoading || isPairAddressesLoading || isPairDataLoading,
     totalPairs,
+    refetch: refetchPairData,
   };
 }

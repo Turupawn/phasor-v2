@@ -265,13 +265,6 @@ export function useAddLiquidity(
     if (!tokenA || !account) return;
     setError(null);
 
-    console.log('[approveA] Attempting approval:', {
-      token: tokenA.symbol,
-      tokenAddress: tokenA.address,
-      router: CONTRACTS.ROUTER,
-      amount: parsedAmountA.toString(),
-    });
-
     try {
       writeApproveA({
         address: tokenA.address,

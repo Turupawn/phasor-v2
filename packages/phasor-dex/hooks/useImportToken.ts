@@ -73,19 +73,6 @@ export function useImportToken(
     },
   });
 
-  // Debug logging
-  useEffect(() => {
-    if (validAddress && data) {
-      console.log('[useImportToken] Query result:', {
-        address: validAddress,
-        data,
-        isLoading,
-        isError,
-        queryError,
-      });
-    }
-  }, [validAddress, data, isLoading, isError, queryError]);
-
   useEffect(() => {
     if (!addressInput) {
       setError(null);

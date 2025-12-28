@@ -15,10 +15,10 @@ export const monad = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["https://testnet-rpc.monad.xyz"],
+      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "https://testnet-rpc.monad.xyz"],
     },
     public: {
-      http: ["https://testnet-rpc.monad.xyz"],
+      http: [process.env.NEXT_PUBLIC_DEFAULT_RPC_URL || "https://testnet-rpc.monad.xyz"],
     },
   },
   blockExplorers: {
@@ -63,14 +63,6 @@ export const DEFAULT_TOKENS: Token[] = tokenList.tokens
     logoURI: token.logoURI,
     tags: (token as any).tags || [],
   }));
-
-// Debug logging for tokens
-if (typeof window !== 'undefined') {
-  console.log('[TOKENS] Loaded DEFAULT_TOKENS:', {
-    count: DEFAULT_TOKENS.length,
-    tokens: DEFAULT_TOKENS.map(t => ({ address: t.address, symbol: t.symbol, name: t.name })),
-  });
-}
 
 // Native token representation (for UI)
 export const NATIVE_TOKEN: Token = {

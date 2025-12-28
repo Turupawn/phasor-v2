@@ -20,10 +20,15 @@ export function useUserPositions() {
     }));
   }, [address, pools]);
 
-  const { data: balances, isLoading: isBalancesLoading } = useReadContracts({
+  const { data: balances, isLoading: isBalancesLoading, refetch: refetchBalances } = useReadContracts({
     contracts: balanceContracts,
     query: {
       enabled: !!address && balanceContracts.length > 0,
+      refetchInterval: 2000, // Refetch every 2 seconds
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      staleTime: 0, // Data is immediately considered stale
+      gcTime: 0, // Don't cache data
     },
   });
 
@@ -70,5 +75,6 @@ export function useUserPositions() {
     positions,
     isLoading: isPoolsLoading || isBalancesLoading,
     hasPositions: positions.length > 0,
+    refetch: refetchBalances,
   };
 }
