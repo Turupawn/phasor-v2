@@ -70,11 +70,9 @@ export function usePools() {
     contracts: pairDataContracts,
     query: {
       enabled: pairDataContracts.length > 0,
-      refetchInterval: 2000, // Refetch every 2 seconds
+      // Reasonable defaults for production - data updates on block changes
       refetchOnMount: true,
-      refetchOnWindowFocus: true,
-      staleTime: 0, // Data is immediately considered stale
-      gcTime: 0, // Don't cache data
+      refetchOnWindowFocus: false,
     },
   });
 
