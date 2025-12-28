@@ -338,6 +338,7 @@ export function useAddLiquidity(
           functionName: "addLiquidityETH",
           args: [token.address, tokenAmount, tokenMin, ethMin, account, txDeadline],
           value: ethAmount,
+          gas: BigInt(500000), // Manual gas limit for Monad testnet
         });
       } else {
         console.log('[addLiquidity] Adding liquidity with ERC20 tokens');
@@ -355,6 +356,7 @@ export function useAddLiquidity(
             account,
             txDeadline,
           ],
+          gas: BigInt(500000), // Manual gas limit for Monad testnet
         });
       }
 

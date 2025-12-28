@@ -31,6 +31,16 @@ export function usePoolsHybrid(): UsePoolsHybridResult {
 
   // Merge the data: Start with contract pools, enrich with subgraph data
   const enrichedPools = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[usePoolsHybrid] Merging data:', {
+        contractPoolsCount: contractPools.length,
+        subgraphPoolsCount: subgraphPools.length,
+        isContractLoading,
+        isSubgraphLoading,
+        error: error?.message
+      });
+    }
+
     if (contractPools.length === 0) return [];
 
     // Create a map of subgraph pools by address for quick lookup

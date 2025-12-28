@@ -15,6 +15,11 @@ export function usePools() {
 
   const totalPairs = Number(pairsLength ?? 0);
 
+  // Debug logging
+  if (typeof window !== 'undefined' && pairsLength !== undefined) {
+    console.log('[usePools] Factory allPairsLength:', totalPairs, 'Factory address:', CONTRACTS.FACTORY);
+  }
+
   // Get all pair addresses
   const pairAddressContracts = useMemo(() => {
     if (totalPairs === 0) return [];
@@ -75,7 +80,17 @@ export function usePools() {
 
   // Process the data into Pool objects
   const pools: Pool[] = useMemo(() => {
-    if (!pairAddresses || !pairData || pairData.length === 0) return [];
+    if (!pairAddresses || !pairData || pairData.length === 0) {
+      if (typeof window !== 'undefined') {
+        console.log('[usePools] No pool data available:', {
+          hasPairAddresses: !!pairAddresses,
+          pairAddressesLength: pairAddresses?.length,
+          hasPairData: !!pairData,
+          pairDataLength: pairData?.length
+        });
+      }
+      return [];
+    }
 
     const pools: Pool[] = [];
     const itemsPerPair = 4; // token0, token1, reserves, totalSupply
@@ -124,6 +139,16 @@ export function usePools() {
         totalSupply,
         fee: 30, // 0.3% fee (Uniswap V2 standard)
       });
+    }
+
+    if (typeof window !== 'undefined' && pools.length > 0) {
+      console.log('[usePools] Successfully processed pools:', pools.length, pools.map(p => ({
+        address: p.address,
+        token0: p.token0.symbol,
+        token1: p.token1.symbol,
+        reserve0: p.reserve0.toString(),
+        reserve1: p.reserve1.toString()
+      })));
     }
 
     return pools;
