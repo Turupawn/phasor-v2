@@ -4,5 +4,6 @@ export * from "./useSwap";
 export * from "./useAddLiquidity";
 export * from "./usePools";
 export * from "./usePoolsHybrid";
+export * from "./usePoolDetail";
 export * from "./useUserPositions";
 export * from "./useImportToken";

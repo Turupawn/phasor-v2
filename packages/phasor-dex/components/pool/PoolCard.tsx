@@ -54,10 +54,11 @@ export function PoolCard({ pool }: PoolCardProps) {
   };
 
   return (
-    <Card className="pool-card hover:border-primary/30 transition-all duration-300 w-full max-w-md mx-auto">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          {/* Token Pair */}
+    <Link href={`/pools/${pool.address}`} className="block">
+      <Card className="pool-card hover:border-primary/30 transition-all duration-300 w-full max-w-md mx-auto cursor-pointer">
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between">
+            {/* Token Pair */}
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               <div className="w-10 h-10 rounded-full bg-secondary border-2 border-card flex items-center justify-center overflow-hidden z-10">
@@ -154,17 +155,18 @@ export function PoolCard({ pool }: PoolCardProps) {
 
         {/* Actions */}
         <div className="flex gap-2 mt-4">
-          <Link href="/pools/add" className="flex-1">
+          <Link href="/pools/add" className="flex-1" onClick={(e) => e.stopPropagation()}>
             <Button variant="outline" className="w-full">
               Add Liquidity
             </Button>
           </Link>
-          <Link href="/swap" className="flex-1">
+          <Link href="/swap" className="flex-1" onClick={(e) => e.stopPropagation()}>
             <Button className="w-full">Swap</Button>
           </Link>
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }
 
