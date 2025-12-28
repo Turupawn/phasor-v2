@@ -81,8 +81,8 @@ describe('Add Liquidity Integration Tests', () => {
     transport: http(RPC_URL),
   });
 
-  const TKN1 = process.env.NEXT_PUBLIC_TKN1_ADDRESS as `0x${string}`;
-  const TKN2 = process.env.NEXT_PUBLIC_TKN2_ADDRESS as `0x${string}`;
+  const TKN1 = process.env.NEXT_PUBLIC_DEFAULT_TKN1_ADDRESS as `0x${string}`;
+  const TKN2 = process.env.NEXT_PUBLIC_DEFAULT_TKN2_ADDRESS as `0x${string}`;
   const ROUTER = CONTRACTS.ROUTER;
   const FACTORY = CONTRACTS.FACTORY;
 

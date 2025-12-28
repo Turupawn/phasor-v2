@@ -1,339 +1,307 @@
 # Subgraph Deployment Guide
 
-This guide covers deploying the Phasor V2 subgraph to production.
+This guide covers deploying the Phasor V2 subgraph for both local development and production.
 
 ## Table of Contents
-1. [Quick Start - Self-Hosted Graph Node](#option-1-self-hosted-graph-node)
-2. [Alternative - Goldsky](#option-2-goldsky-recommended-for-easiest-setup)
-3. [Alternative - The Graph Network](#option-3-the-graph-decentralized-network)
-4. [Updating Your Frontend](#update-frontend-configuration)
+1. [Local Development Setup](#local-development-setup)
+2. [Production Deployment](#production-deployment)
+3. [Update Frontend Configuration](#update-frontend-configuration)
 
 ---
 
-## Option 1: Self-Hosted Graph Node
+## Local Development Setup
 
-**Best for:** Full control, custom chains like Monad
+**Purpose:** Test subgraph locally with a local blockchain (Hardhat, Anvil, etc.)
 
-### Prerequisites
-- A VPS or cloud server (4GB+ RAM, 50GB+ disk)
-- Docker and Docker Compose installed
-- Access to a Monad RPC endpoint
+**What you need:**
+- Docker and Docker Compose
+- A local Monad blockchain running on port 8545
 
-### Steps
+### Setup Steps
 
-#### 1. Prepare Your Server
+#### 1. Start Local Blockchain
 
+First, ensure you have a local Monad blockchain running:
 ```bash
-# SSH into your server
-ssh user@your-server.com
-
-# Install Docker (if not already installed)
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-
-# Install Docker Compose
-sudo apt-get update
-sudo apt-get install docker-compose-plugin
+# Example: Using Hardhat or Anvil
+# (This depends on your local setup)
 ```
 
-#### 2. Clone and Configure
+#### 2. Start Graph Node Stack
+
+From the **project root** (not v2-subgraph directory):
 
 ```bash
-# Clone your repo or copy the v2-subgraph folder to your server
-git clone <your-repo> phasor-subgraph
-cd phasor-subgraph/packages/v2-subgraph
+# Start Graph Node + PostgreSQL + IPFS
+docker-compose up -d
 
-# Create production environment file
-cp .env.production.example .env.production
+# Check logs to ensure services are running
+docker-compose logs -f graph-node
 
-# Edit the configuration
-nano .env.production
+# Wait for: "Starting JSON-RPC admin server at: http://0.0.0.0:8020"
 ```
 
-Update `.env.production`:
-```env
-ETHEREUM_RPC_URL=https://your-monad-rpc-endpoint.com
-POSTGRES_PASSWORD=your-secure-password-123
-```
+This starts:
+- **Graph Node** on port 8000 (GraphQL), 8020 (admin)
+- **PostgreSQL** on port 5432 (data storage)
+- **IPFS** on port 5001 (subgraph files)
 
-#### 3. Start Graph Node
+#### 3. Deploy Contracts Locally
 
 ```bash
-# Start the Graph node services
-docker-compose -f docker-compose.production.yml up -d
-
-# Check logs
-docker-compose -f docker-compose.production.yml logs -f graph-node
-
-# Wait for Graph node to be ready (look for "Starting JSON-RPC admin server")
+cd packages/v2-core
+# Deploy factory and other contracts to your local chain
+# Note the deployed addresses
 ```
 
-#### 4. Build and Deploy Subgraph
+#### 4. Update Local Config
+
+Edit `packages/v2-subgraph/config/monad-testnet/chain.ts` with your local contract addresses if testing locally.
+
+#### 5. Build and Deploy Subgraph
 
 ```bash
-# Install dependencies
+cd packages/v2-subgraph
+
+# Install dependencies (first time only)
 yarn install
 
-# Build the subgraph
-yarn build --network monad --subgraph-type v2
+# Build the subgraph for Monad testnet config
+yarn build --network monad-testnet --subgraph-type v2
 
-# Deploy to your Graph node
-export GRAPH_NODE_URL=http://localhost:8020
-export IPFS_URL=http://localhost:5001
-./scripts/deploy-hosted.sh
+# Deploy to local Graph Node
+yarn deploy:local
 ```
 
-#### 5. Verify Deployment
+#### 6. Query Your Subgraph
 
 ```bash
 # Check if subgraph is syncing
-curl http://localhost:8000/subgraphs/name/phasor/phasor-v2
+curl http://localhost:8000/subgraphs/name/uniswap-v2-monad-testnet
 
-# Query the subgraph
+# Test a GraphQL query
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"query": "{ pairs(first: 5) { id token0 { symbol } token1 { symbol } } }"}' \
-  http://localhost:8000/subgraphs/name/phasor/phasor-v2
+  http://localhost:8000/subgraphs/name/uniswap-v2-monad-testnet
 ```
 
-#### 6. Set Up Domain (Optional but Recommended)
+#### 7. Update Frontend for Local Development
 
-```bash
-# Install nginx
-sudo apt-get install nginx
-
-# Configure reverse proxy
-sudo nano /etc/nginx/sites-available/subgraph
+Create a `.env.local` file in `packages/phasor-dex`:
+```env
+NEXT_PUBLIC_SUBGRAPH_URL=http://localhost:8000/subgraphs/name/uniswap-v2-monad-testnet
 ```
-
-Add this configuration:
-```nginx
-server {
-    listen 80;
-    server_name subgraph.yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-```bash
-# Enable site
-sudo ln -s /etc/nginx/sites-available/subgraph /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-
-# Optional: Set up SSL with Let's Encrypt
-sudo apt-get install certbot python3-certbot-nginx
-sudo certbot --nginx -d subgraph.yourdomain.com
-```
-
-Your subgraph is now available at: `https://subgraph.yourdomain.com/subgraphs/name/phasor/phasor-v2`
 
 ---
 
-## Option 2: Goldsky (Recommended for Easiest Setup)
+## Production Deployment
 
-**Best for:** Quick deployment, managed service, no server management
+For production, you have three options. **We do NOT use the docker-compose.production.yml file** - that's only if you want to self-host everything.
 
-### Steps
+### Option 1: The Graph Studio (Recommended)
 
-1. **Sign up for Goldsky**
-   - Go to [goldsky.com](https://goldsky.com)
-   - Create an account
-   - Connect your GitHub
+**Best for:** Managed infrastructure, no server costs
 
-2. **Install Goldsky CLI**
-   ```bash
-   curl https://goldsky.com/install.sh | sh
-   goldsky login
-   ```
+**Prerequisites:**
+- Wallet with ETH for deployment gas
+- Contracts deployed on Monad testnet
 
-3. **Deploy Subgraph**
-   ```bash
-   cd packages/v2-subgraph
+**Steps:**
 
-   # Build the subgraph
-   yarn build --network monad --subgraph-type v2
+#### 1. Create Subgraph in Studio
 
-   # Deploy to Goldsky
-   goldsky subgraph deploy phasor-v2/v1.0.0 \
-     --path ./v2-subgraph.yaml \
-     --network monad
-   ```
+1. Go to [thegraph.com/studio](https://thegraph.com/studio)
+2. Connect your wallet
+3. Click "Create a Subgraph"
+4. Name it `phasor-v2-monad-testnet`
+5. Copy your **deploy key**
 
-4. **Get Your Endpoint**
-   ```bash
-   goldsky subgraph list
-   ```
+#### 2. Install Graph CLI
 
-   Your endpoint will be something like:
-   `https://api.goldsky.com/api/public/project_<id>/subgraphs/phasor-v2/v1.0.0/gn`
+```bash
+npm install -g @graphprotocol/graph-cli
+```
+
+#### 3. Build Subgraph
+
+```bash
+cd packages/v2-subgraph
+
+# Build for Monad testnet
+yarn build --network monad-testnet --subgraph-type v2
+```
+
+#### 4. Authenticate and Deploy
+
+```bash
+# Authenticate with your deploy key from Studio
+graph auth --studio <YOUR_DEPLOY_KEY>
+
+# Deploy to Studio
+graph deploy --studio phasor-v2-monad-testnet
+```
+
+#### 5. Get Your GraphQL Endpoint
+
+After deployment, The Graph Studio will provide you with a URL like:
+```
+https://api.studio.thegraph.com/query/<ID>/phasor-v2-monad-testnet/version/latest
+```
+
+**Important:** The Graph Studio handles all infrastructure:
+- ✅ PostgreSQL (managed by them)
+- ✅ IPFS (managed by them)
+- ✅ Graph Node (managed by them)
+- ✅ Monitoring and indexing (managed by them)
+
+You just deploy your subgraph code and they handle everything else.
 
 ---
 
-## Option 3: The Graph Decentralized Network
+### Option 2: Goldsky
 
-**Best for:** Maximum decentralization, established networks
+**Best for:** High performance, advanced features, managed service
 
-**Note:** The Graph Network may not support Monad yet. Check [thegraph.com/docs/en/developing/supported-networks/](https://thegraph.com/docs/en/developing/supported-networks/) for supported networks.
+**Prerequisites:**
+- Goldsky account
+- Contracts deployed on Monad testnet
 
-### Steps (if Monad is supported)
+**Steps:**
 
-1. **Create Subgraph in Studio**
-   - Go to [thegraph.com/studio](https://thegraph.com/studio)
-   - Connect wallet
-   - Click "Create a Subgraph"
-   - Name it "phasor-v2"
+#### 1. Sign Up and Install CLI
 
-2. **Install Graph CLI**
-   ```bash
-   npm install -g @graphprotocol/graph-cli
-   ```
+```bash
+# Sign up at goldsky.com
+curl https://goldsky.com/install.sh | sh
+goldsky login
+```
 
-3. **Authenticate**
-   ```bash
-   graph auth --studio <DEPLOY_KEY>
-   ```
+#### 2. Build and Deploy
 
-4. **Deploy**
-   ```bash
-   cd packages/v2-subgraph
-   yarn build --network monad --subgraph-type v2
-   graph deploy --studio phasor-v2
-   ```
+```bash
+cd packages/v2-subgraph
 
-5. **Publish to Network**
-   - Go to Studio dashboard
-   - Click "Publish"
-   - Pay gas fees + signal GRT
+# Build the subgraph
+yarn build --network monad-testnet --subgraph-type v2
+
+# Deploy to Goldsky
+goldsky subgraph deploy phasor-v2-monad-testnet/v1.0.0 \
+  --path ./v2-subgraph.yaml
+```
+
+#### 3. Get Your Endpoint
+
+```bash
+goldsky subgraph list
+```
+
+Your endpoint will be:
+```
+https://api.goldsky.com/api/public/project_<id>/subgraphs/phasor-v2-monad-testnet/v1.0.0/gn
+```
+
+Like The Graph Studio, Goldsky manages all infrastructure for you.
 
 ---
 
 ## Update Frontend Configuration
 
-After deploying, update your Vercel environment variables:
+After deploying your subgraph, update your frontend to use the production GraphQL endpoint.
 
-### In Vercel Dashboard
+### For Vercel Deployment
 
-1. Go to your project settings
+1. Go to your Vercel project settings
 2. Navigate to "Environment Variables"
-3. Add/Update:
-   ```
-   NEXT_PUBLIC_SUBGRAPH_URL=https://your-subgraph-endpoint.com/subgraphs/name/phasor/phasor-v2
-   ```
+3. Add/Update `NEXT_PUBLIC_SUBGRAPH_URL`
 
-### Examples by Deployment Method
+**Examples:**
 
-**Self-hosted:**
+**The Graph Studio:**
 ```env
-NEXT_PUBLIC_SUBGRAPH_URL=https://subgraph.yourdomain.com/subgraphs/name/phasor/phasor-v2
+NEXT_PUBLIC_SUBGRAPH_URL=https://api.studio.thegraph.com/query/<ID>/phasor-v2-monad-testnet/version/latest
 ```
 
 **Goldsky:**
 ```env
-NEXT_PUBLIC_SUBGRAPH_URL=https://api.goldsky.com/api/public/project_<id>/subgraphs/phasor-v2/v1.0.0/gn
+NEXT_PUBLIC_SUBGRAPH_URL=https://api.goldsky.com/api/public/project_<id>/subgraphs/phasor-v2-monad-testnet/v1.0.0/gn
 ```
 
-**The Graph Network:**
-```env
-NEXT_PUBLIC_SUBGRAPH_URL=https://gateway.thegraph.com/api/<API_KEY>/subgraphs/id/<SUBGRAPH_ID>
-```
+### Redeploy Frontend
 
-### Redeploy
+After updating environment variables:
 
-After updating env vars in Vercel:
-1. Go to "Deployments" tab
-2. Click "..." on latest deployment
-3. Click "Redeploy"
-
-Or trigger a new deployment:
 ```bash
+# Trigger new deployment
 git commit --allow-empty -m "Update subgraph URL"
 git push
 ```
 
+Or redeploy in Vercel dashboard:
+1. Go to "Deployments" tab
+2. Click "..." on latest deployment
+3. Click "Redeploy"
+
 ---
 
-## Monitoring and Maintenance
+## Monitoring and Troubleshooting
 
-### Check Subgraph Health
+### Check Subgraph Sync Status
 
-```bash
-# Query indexing status
-curl -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"query": "{ indexingStatuses { subgraph synced health chains { latestBlock { number } chainHeadBlock { number } } } }"}' \
-  http://your-graph-node:8030/graphql
-```
+**The Graph Studio:**
+- View in dashboard at thegraph.com/studio
+
+**Goldsky:**
+- View in dashboard at goldsky.com
 
 ### Common Issues
 
 **Subgraph not syncing:**
-- Check RPC endpoint is accessible
-- Verify factory address and start block are correct
-- Check Graph node logs: `docker-compose logs -f graph-node`
+- Verify RPC endpoint is accessible
+- Check factory address in `config/monad-testnet/chain.ts`
+- Verify start block is correct
+- Check deployment logs in The Graph Studio or Goldsky dashboard
 
-**Slow indexing:**
-- Increase RPC rate limits
-- Use archive node for historical data
-- Adjust `GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE`
+**Missing pairs/tokens:**
+- Ensure contracts are deployed on the correct network
+- Verify factory address matches deployment
+- Check that liquidity has been added on-chain
 
-**Out of sync:**
-- Redeploy with updated start block
-- Check for chain reorgs
+**Frontend not showing data:**
+- Verify `NEXT_PUBLIC_SUBGRAPH_URL` is correct
+- Check browser console for GraphQL errors
+- Test GraphQL endpoint directly with curl
 
 ---
 
-## Cost Estimates
+## Recommended Deployment Strategy
 
-### Self-Hosted (VPS)
-- **DigitalOcean/Linode:** $24-48/month (4-8GB RAM droplet)
-- **AWS/GCP:** $30-60/month (t3.medium or similar)
-- **Domain + SSL:** $12/year (optional)
+### For Development
+- Use local Graph Node (root `docker-compose.yml`)
+- Point frontend to `http://localhost:8000`
+
+### For Testnet/Production
+- **Recommended:** The Graph Studio
+  - Free to deploy
+  - Managed infrastructure
+  - No server costs
+  - Easy monitoring
+
+- **Alternative:** Goldsky (if advanced features needed)
+
+---
+
+## Cost Comparison
+
+### Local Development
+- **Cost:** $0 (runs on your machine)
+- **Use case:** Testing only
+
+### The Graph Studio
+- **Cost:** Free for development/testnet
+- **Mainnet:** Pay-per-query (very low cost)
+- **Use case:** Recommended for testnet and mainnet
 
 ### Goldsky
-- **Free tier:** Limited queries
-- **Pro:** $99/month+ (unlimited queries)
-
-### The Graph Network
-- **Deployment:** ~$50-100 in gas
-- **Curation signal:** Requires GRT tokens
-- **Query fees:** Pay-per-query (usually very low)
-
----
-
-## Recommended Approach
-
-For Phasor on Monad, we recommend:
-
-1. **Development:** Local Graph node (already set up)
-2. **Production:**
-   - **Option A (Easy):** Goldsky - if they support Monad
-   - **Option B (Control):** Self-hosted on DigitalOcean droplet
-
-### Quick Start with DigitalOcean
-
-1. Create a $24/month droplet (4GB RAM, Ubuntu 22.04)
-2. SSH in and run:
-   ```bash
-   git clone <your-repo>
-   cd <repo>/packages/v2-subgraph
-   cp .env.production.example .env.production
-   # Edit .env.production with your RPC URL
-   docker-compose -f docker-compose.production.yml up -d
-   yarn install
-   yarn build --network monad --subgraph-type v2
-   ./scripts/deploy-hosted.sh
-   ```
-3. Point a subdomain to the droplet IP
-4. Set up nginx + SSL
-5. Update Vercel env vars
-
-Total time: ~30 minutes
+- **Cost:** Free tier available, paid plans for production
+- **Use case:** High-performance production deployments

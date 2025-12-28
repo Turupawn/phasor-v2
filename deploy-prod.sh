@@ -9,7 +9,7 @@ echo ""
 RPC_URL="${RPC_URL:-https://testnet-rpc.monad.xyz}"
 CHAIN_ID="${CHAIN_ID:-10143}"
 LIBRARY_FILE="packages/periphery/contracts/libraries/UniswapV2Library.sol"
-FRONTEND_ENV="packages/phasor-dex/.env.local"
+FRONTEND_ENV="packages/phasor-dex/.env.prod"
 
 # Step 1: Compile contracts
 echo "📦 Step 1: Compiling contracts..."

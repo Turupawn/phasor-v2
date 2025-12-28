@@ -1,5 +1,6 @@
-import { useReadContract, useBalance, useAccount } from "wagmi";
+import { useReadContract, useReadContracts, useBalance, useAccount } from "wagmi";
 import { Address, erc20Abi } from "viem";
+import { useMemo } from "react";
 import { Token } from "@/types";
 import { NATIVE_TOKEN } from "@/config";
 
@@ -69,16 +70,77 @@ export function useTokenBalance(token: Token | null): UseTokenBalanceResult {
   };
 }
 
-// Hook to get multiple token balances
-export function useTokenBalances(tokens: Token[]): Map<Address, bigint> {
+// Hook to get multiple token balances efficiently using multicall
+export function useTokenBalances(tokens: Token[], enabled: boolean = true): Map<Address, bigint> {
   const { address: account } = useAccount();
-  const balances = new Map<Address, bigint>();
-  
-  // This is a simplified version - in production you'd use multicall
-  tokens.forEach((token) => {
-    const { balance } = useTokenBalance(token);
-    balances.set(token.address, balance);
+
+  // Serialize token addresses to stabilize dependency - avoid recalculating on every render
+  const tokenAddressesStr = useMemo(
+    () => tokens.map(t => t.address).join(','),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tokens.length, tokens[0]?.address, tokens[tokens.length - 1]?.address]
+  );
+
+  // Separate native token from ERC20 tokens - memoized based on serialized addresses
+  const erc20Tokens = useMemo(() =>
+    tokens.filter(
+      token => token.address.toLowerCase() !== NATIVE_TOKEN.address.toLowerCase()
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tokenAddressesStr]
+  );
+
+  const hasNativeToken = useMemo(() =>
+    tokens.some(
+      token => token.address.toLowerCase() === NATIVE_TOKEN.address.toLowerCase()
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tokenAddressesStr]
+  );
+
+  // Fetch native balance separately
+  const { data: nativeBalance } = useBalance({
+    address: account,
+    query: {
+      enabled: enabled && !!account && hasNativeToken,
+    },
   });
-  
-  return balances;
+
+  // Memoize contracts array to prevent unnecessary re-fetches
+  const contracts = useMemo(() =>
+    erc20Tokens.map(token => ({
+      address: token.address as Address,
+      abi: erc20Abi,
+      functionName: "balanceOf" as const,
+      args: account ? [account] : undefined,
+    })),
+    [erc20Tokens, account]
+  );
+
+  // Batch fetch all ERC20 balances at once using multicall
+  const { data: balanceData } = useReadContracts({
+    contracts,
+    query: {
+      enabled: enabled && !!account && erc20Tokens.length > 0,
+    },
+  });
+
+  // Create a map of token address to balance - memoized
+  return useMemo(() => {
+    const balances = new Map<Address, bigint>();
+
+    // Add native token balance if present
+    if (hasNativeToken && nativeBalance) {
+      balances.set(NATIVE_TOKEN.address, nativeBalance.value);
+    }
+
+    // Add ERC20 token balances
+    erc20Tokens.forEach((token, index) => {
+      const result = balanceData?.[index];
+      const balance = result?.status === "success" ? (result.result as bigint) : BigInt(0);
+      balances.set(token.address, balance);
+    });
+
+    return balances;
+  }, [erc20Tokens, hasNativeToken, nativeBalance, balanceData]);
 }

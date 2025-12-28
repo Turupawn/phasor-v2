@@ -24,7 +24,7 @@ export const monad = defineChain({
   blockExplorers: {
     default: {
       name: "Monad Testnet Explorer",
-      url: "https://testnet-explorer.monad.xyz",
+      url: "https://testnet.monadvision.com/",
     },
   },
   testnet: true,
@@ -43,21 +43,6 @@ export const CONTRACTS = {
   // Wrapped MON (WMON) address
   WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701") as Address,
 } as const;
-
-// Debug logging
-if (typeof window !== 'undefined') {
-  console.log('[CONTRACTS] Configuration:', {
-    FACTORY: CONTRACTS.FACTORY,
-    ROUTER: CONTRACTS.ROUTER,
-    WMON: CONTRACTS.WMON,
-    RPC_URL: process.env.NEXT_PUBLIC_DEFAULT_RPC_URL,
-    ENV_VARS: {
-      FACTORY_ENV: process.env.NEXT_PUBLIC_DEFAULT_FACTORY_ADDRESS,
-      ROUTER_ENV: process.env.NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS,
-      RPC_ENV: process.env.NEXT_PUBLIC_DEFAULT_RPC_URL,
-    }
-  });
-}
 
 // ============================================
 // DEFAULT TOKENS LIST (from token list standard)
@@ -78,6 +63,14 @@ export const DEFAULT_TOKENS: Token[] = tokenList.tokens
     logoURI: token.logoURI,
     tags: (token as any).tags || [],
   }));
+
+// Debug logging for tokens
+if (typeof window !== 'undefined') {
+  console.log('[TOKENS] Loaded DEFAULT_TOKENS:', {
+    count: DEFAULT_TOKENS.length,
+    tokens: DEFAULT_TOKENS.map(t => ({ address: t.address, symbol: t.symbol, name: t.name })),
+  });
+}
 
 // Native token representation (for UI)
 export const NATIVE_TOKEN: Token = {
