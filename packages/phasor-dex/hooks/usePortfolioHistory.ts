@@ -18,6 +18,23 @@ export interface UsePortfolioHistoryResult {
   error: Error | null;
 }
 
+interface TokenDayData {
+  date: string;
+  token: {
+    id: string;
+    decimals: string;
+  };
+  priceUSD: string;
+  dailyVolumeUSD: string;
+}
+
+interface TokenPriceHistoryData {
+  bundle?: {
+    ethPrice: string;
+  };
+  tokenDayDatas?: TokenDayData[];
+}
+
 const PERIOD_TO_DAYS: Record<HistoryPeriod, number> = {
   "1D": 1,
   "1W": 7,
@@ -76,7 +93,7 @@ export function usePortfolioHistory(
   }, [period]);
 
   // Fetch historical price data
-  const { data, loading, error } = useQuery(GET_TOKEN_PRICE_HISTORY, {
+  const { data, loading, error } = useQuery<TokenPriceHistoryData>(GET_TOKEN_PRICE_HISTORY, {
     client: tokensApolloClient,
     variables: {
       startTime,

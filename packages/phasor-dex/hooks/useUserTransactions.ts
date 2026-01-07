@@ -15,13 +15,68 @@ export interface UseUserTransactionsResult {
   hasMore: boolean;
 }
 
+interface TransactionToken {
+  id: string;
+  symbol: string;
+  decimals: string;
+}
+
+interface TransactionPair {
+  token0: TransactionToken;
+  token1: TransactionToken;
+}
+
+interface MintData {
+  id: string;
+  timestamp: string;
+  pair: TransactionPair;
+  amount0: string;
+  amount1: string;
+  amountUSD: string;
+  transaction: {
+    id: string;
+  };
+}
+
+interface BurnData {
+  id: string;
+  timestamp: string;
+  pair: TransactionPair;
+  amount0: string;
+  amount1: string;
+  amountUSD: string;
+  transaction: {
+    id: string;
+  };
+}
+
+interface SwapData {
+  id: string;
+  timestamp: string;
+  pair: TransactionPair;
+  amount0In: string;
+  amount1In: string;
+  amount0Out: string;
+  amount1Out: string;
+  amountUSD: string;
+  transaction: {
+    id: string;
+  };
+}
+
+interface UserTransactionsData {
+  mints?: MintData[];
+  burns?: BurnData[];
+  swaps?: SwapData[];
+}
+
 const TRANSACTIONS_PER_PAGE = 50;
 
 export function useUserTransactions(): UseUserTransactionsResult {
   const { address: userAddress } = useAccount();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, loading, error } = useQuery(GET_USER_TRANSACTIONS, {
+  const { data, loading, error } = useQuery<UserTransactionsData>(GET_USER_TRANSACTIONS, {
     variables: {
       user: userAddress?.toLowerCase() || "",
       first: TRANSACTIONS_PER_PAGE * currentPage,

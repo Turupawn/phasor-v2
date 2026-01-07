@@ -18,6 +18,26 @@ export interface UseTokenPricesResult {
   error: Error | null;
 }
 
+interface TokenData {
+  id: string;
+  derivedETH: string;
+}
+
+interface TokenDayData {
+  token: {
+    id: string;
+  };
+  priceUSD: string;
+}
+
+interface TokenPricesData {
+  bundle?: {
+    ethPrice: string;
+  };
+  tokens?: TokenData[];
+  tokenDayDatas?: TokenDayData[];
+}
+
 export function useTokenPrices(tokenAddresses: Address[]): UseTokenPricesResult {
   // Calculate timestamp for 24h ago (in seconds)
   const timestamp24hAgo = useMemo(() => {
@@ -25,7 +45,7 @@ export function useTokenPrices(tokenAddresses: Address[]): UseTokenPricesResult 
     return Math.floor((now - 86400) / 86400) * 86400; // Round to day boundary
   }, []);
 
-  const { data, loading, error } = useQuery(GET_TOKEN_PRICES, {
+  const { data, loading, error } = useQuery<TokenPricesData>(GET_TOKEN_PRICES, {
     client: tokensApolloClient,
     variables: {
       tokenIds: tokenAddresses.map(addr => addr.toLowerCase()),

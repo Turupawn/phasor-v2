@@ -54,9 +54,13 @@ export function useTokenBalance(token: Token | null): UseTokenBalanceResult {
   }
   
   if (isNative) {
+    const balance = nativeBalance?.value ?? BigInt(0);
+    const decimals = nativeBalance?.decimals ?? 18;
+    const formatted = balance ? (Number(balance) / Math.pow(10, decimals)).toFixed(4) : "0";
+
     return {
-      balance: nativeBalance?.value ?? BigInt(0),
-      formatted: nativeBalance?.formatted ?? "0",
+      balance,
+      formatted,
       isLoading: nativeLoading,
       refetch: refetchNative,
     };
