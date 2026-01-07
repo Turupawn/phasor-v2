@@ -123,7 +123,7 @@ Visit [http://localhost:3000](http://localhost:3000)
 ```bash
 cd packages/v2-subgraph
 
-# Update subgraph.yaml with your contract addresses
+# Update v2-subgraph.yaml with your contract addresses
 # Then deploy to The Graph
 yarn deploy
 ```

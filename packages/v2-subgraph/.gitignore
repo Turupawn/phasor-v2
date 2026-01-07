@@ -9,7 +9,11 @@ yarn.lock
 package-lock.json
 .vscode
 .env
+.env.local
 /.subgraph-env
 subgraph.yaml
 /src/common/chain.ts
 /*subgraph.yaml
+
+# Local Graph node data
+data/

@@ -40,7 +40,7 @@
     },
     {
       "chainId": 10143,
-      "address": "0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D",
+      "address": "0x4B6e26969BFA65263EF86F0f9326C6835509038F",
       "name": "Tether USD",
       "symbol": "USDT",
       "decimals": 6,
@@ -72,7 +72,7 @@
     },
     {
       "chainId": 10143,
-      "address": "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
+      "address": "0xbbdbCfEf20072142e233F61eD26005c7d2983C5f",
       "name": "Wrapped Monad",
       "symbol": "WMON",
       "decimals": 18,
@@ -101,6 +101,30 @@
       "symbol": "TKN2",
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/monad-crypto/token-list/refs/heads/main/mainnet/FOLKS/logo.svg"
+    },
+        {
+      "chainId": 10143,
+      "address": "0xf7C38E465E79c4FcD53641C3dA8Ab0A4104BA285",
+      "name": "Test Token 3",
+      "symbol": "TKN3",
+      "decimals": 18,
+      "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/wbtc.png/public"
+    },
+     {
+      "chainId": 10143,
+      "address": "0x4cE3d67b365692C1Fe0AC793F3c86787aE943CDD",
+      "name": "Test Token 4",
+      "symbol": "TKN4",
+      "decimals": 18,
+      "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/wbtc.png/public"
+    },
+     {
+      "chainId": 10143,
+      "address": "0x2138382BA785dF890a13Dc986A017e56966a0F8E",
+      "name": "Test WETH",
+      "symbol": "TWETH",
+      "decimals": 18,
+      "logoURI": "https://imagedelivery.net/cBNDGgkrsEA-b_ixIp9SkQ/weth.jpg/public"
     }
   ],
   "version": {

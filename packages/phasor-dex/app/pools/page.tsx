@@ -19,8 +19,18 @@ export default function PoolsPage() {
   const { positions, isLoading: isPositionsLoading } = useUserPositions();
 
   useEffect(() => {
+    console.log('[PoolsPage] Component mounted');
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    console.log('[PoolsPage] State:', {
+      isMounted,
+      isLoading,
+      poolsCount: pools.length,
+      pools: pools.slice(0, 2) // Log first 2 pools
+    });
+  }, [isMounted, isLoading, pools]);
 
   // Filter pools based on search
   const filteredPools = useMemo(() => {

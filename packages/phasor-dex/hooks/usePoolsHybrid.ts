@@ -29,6 +29,11 @@ export function usePoolsHybrid(): UsePoolsHybridResult {
   // Secondary source: Subgraph data (may have issues with historical eth_call on Monad)
   const { pools: subgraphPools, isLoading: isSubgraphLoading, error } = usePoolsFromSubgraph();
 
+  // Debug: Log hook is being called
+  if (typeof window !== 'undefined') {
+    console.log('[usePoolsHybrid] Hook called');
+  }
+
   // Merge the data: Start with contract pools, enrich with subgraph data
   const enrichedPools = useMemo(() => {
     if (typeof window !== 'undefined') {
@@ -64,16 +69,27 @@ export function usePoolsHybrid(): UsePoolsHybridResult {
         tvlUSD: subgraphPool.tvlUSD,
         volume24hUSD: subgraphPool.volume24hUSD,
         apr: subgraphPool.apr,
-        // Prefer subgraph token metadata (it has the correct names/symbols)
+        // Keep contract token metadata (which comes from tokenlist)
+        // Only use subgraph metadata as fallback if contract data looks like a fallback
         token0: {
           ...contractPool.token0,
-          symbol: subgraphPool.token0.symbol || contractPool.token0.symbol,
-          name: subgraphPool.token0.name || contractPool.token0.name,
+          // Only override if contract pool is using fallback (starts with "Token0x")
+          symbol: contractPool.token0.symbol.startsWith('Token0x')
+            ? (subgraphPool.token0.symbol || contractPool.token0.symbol)
+            : contractPool.token0.symbol,
+          name: contractPool.token0.name === 'Unknown Token'
+            ? (subgraphPool.token0.name || contractPool.token0.name)
+            : contractPool.token0.name,
         },
         token1: {
           ...contractPool.token1,
-          symbol: subgraphPool.token1.symbol || contractPool.token1.symbol,
-          name: subgraphPool.token1.name || contractPool.token1.name,
+          // Only override if contract pool is using fallback (starts with "Token0x")
+          symbol: contractPool.token1.symbol.startsWith('Token0x')
+            ? (subgraphPool.token1.symbol || contractPool.token1.symbol)
+            : contractPool.token1.symbol,
+          name: contractPool.token1.name === 'Unknown Token'
+            ? (subgraphPool.token1.name || contractPool.token1.name)
+            : contractPool.token1.name,
         },
       };
     });

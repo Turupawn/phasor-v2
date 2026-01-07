@@ -17,6 +17,10 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: false,
+      // Cache data for 30 seconds to reduce RPC calls
+      staleTime: 30_000,
+      // Keep unused data in cache for 5 minutes
+      gcTime: 5 * 60 * 1000,
     },
   },
 });

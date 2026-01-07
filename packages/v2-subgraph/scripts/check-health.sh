@@ -1,90 +1,98 @@
 #!/bin/bash
 
-# Check subgraph deployment health
-# Usage: ./scripts/check-health.sh [GRAPH_NODE_URL]
+# Check health of local Graph node and subgraphs
+# Usage: ./scripts/check-health.sh
 
-GRAPH_NODE_URL="${1:-http://localhost:8000}"
-SUBGRAPH_NAME="${SUBGRAPH_NAME:-phasor/phasor-v2}"
+set -e
 
-echo "🔍 Checking Subgraph Health"
-echo "========================================"
-echo "Graph Node: $GRAPH_NODE_URL"
-echo "Subgraph: $SUBGRAPH_NAME"
+# Load environment variables if .env.local exists
+if [ -f .env.local ]; then
+    source .env.local
+fi
+
+# Set defaults
+GRAPH_STATUS=${GRAPH_STATUS:-http://localhost:8030/graphql}
+SUBGRAPH_NAME=${SUBGRAPH_NAME:-phasor/v2}
+SUBGRAPH_TOKENS_NAME=${SUBGRAPH_TOKENS_NAME:-phasor/v2-tokens}
+
+echo "🏥 Checking Graph Node Health..."
 echo ""
 
-# Test GraphQL endpoint
-echo "1. Testing GraphQL endpoint..."
-RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME")
-if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "302" ]; then
-    echo "   ✅ Endpoint is accessible (HTTP $RESPONSE)"
-else
-    echo "   ❌ Endpoint returned HTTP $RESPONSE"
+# Check if Graph node is running
+if ! curl -s $GRAPH_STATUS > /dev/null 2>&1; then
+    echo "❌ Graph node is not running at $GRAPH_STATUS"
+    echo "   Start it with: ./scripts/setup-local-node.sh"
     exit 1
 fi
 
-# Check metadata
+echo "✅ Graph node is running"
 echo ""
-echo "2. Checking subgraph metadata..."
-METADATA=$(curl -s -X POST \
-    -H "Content-Type: application/json" \
-    -d '{"query": "{ _meta { block { number hash } deployment hasIndexingErrors } }"}' \
-    "$GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME")
 
-if echo "$METADATA" | grep -q "block"; then
-    BLOCK_NUMBER=$(echo "$METADATA" | grep -o '"number":[0-9]*' | head -1 | cut -d: -f2)
-    HAS_ERRORS=$(echo "$METADATA" | grep -o '"hasIndexingErrors":[a-z]*' | cut -d: -f2)
+# Check indexing status
+echo "📊 Indexing Status:"
+echo ""
 
-    echo "   ✅ Latest indexed block: $BLOCK_NUMBER"
+STATUS=$(curl -s $GRAPH_STATUS \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{indexingStatuses { subgraph health synced fatalError { message } chains { network latestBlock { number } chainHeadBlock { number } } } }"}' \
+  | python3 -m json.tool 2>/dev/null || echo "{}")
 
-    if [ "$HAS_ERRORS" = "true" ]; then
-        echo "   ⚠️  Warning: Subgraph has indexing errors"
-    else
-        echo "   ✅ No indexing errors"
-    fi
-else
-    echo "   ❌ Could not fetch metadata"
-    echo "   Response: $METADATA"
+# Check if we got valid JSON
+if [ "$STATUS" = "{}" ]; then
+    echo "⚠️  Could not fetch indexing status"
+    exit 1
 fi
 
-# Check if data exists
+echo "$STATUS"
 echo ""
-echo "3. Checking indexed data..."
-PAIRS=$(curl -s -X POST \
-    -H "Content-Type: application/json" \
-    -d '{"query": "{ pairs(first: 1) { id } }"}' \
-    "$GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME")
 
-if echo "$PAIRS" | grep -q '"id"'; then
-    PAIR_COUNT=$(curl -s -X POST \
-        -H "Content-Type: application/json" \
-        -d '{"query": "{ pairs { id } }"}' \
-        "$GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME" | \
-        grep -o '"id"' | wc -l)
-
-    echo "   ✅ Found $PAIR_COUNT pairs indexed"
-else
-    echo "   ⚠️  No pairs found yet (might still be syncing)"
-fi
-
-# Sample query
+# Summary
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "4. Running sample query..."
-SAMPLE=$(curl -s -X POST \
-    -H "Content-Type: application/json" \
-    -d '{"query": "{ pairs(first: 3 orderBy: reserveUSD orderDirection: desc) { id token0 { symbol } token1 { symbol } reserveUSD } }"}' \
-    "$GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME")
+echo "📍 Endpoints:"
+echo "   V2 Subgraph:     http://localhost:8000/subgraphs/name/$SUBGRAPH_NAME"
+echo "   Tokens Subgraph: http://localhost:8000/subgraphs/name/$SUBGRAPH_TOKENS_NAME"
+echo "   Admin API:       http://localhost:8020"
+echo "   Status API:      $GRAPH_STATUS"
+echo ""
 
-if echo "$SAMPLE" | grep -q "token0"; then
-    echo "   ✅ Sample query successful"
-    echo ""
-    echo "   Top 3 pools by TVL:"
-    echo "$SAMPLE" | grep -o '"symbol":"[^"]*"' | cut -d\" -f4 | paste -d "/" - - | nl
+# Test query
+echo "🧪 Testing V2 Subgraph Query:"
+TEST_RESULT=$(curl -s http://localhost:8000/subgraphs/name/$SUBGRAPH_NAME \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ pairs(first: 1) { id } }"}' 2>/dev/null || echo '{"errors":[{"message":"subgraph not found"}]}')
+
+if echo "$TEST_RESULT" | grep -q '"data"'; then
+    echo "✅ V2 Subgraph is queryable"
+    echo "$TEST_RESULT" | python3 -m json.tool 2>/dev/null || echo "$TEST_RESULT"
 else
-    echo "   ⚠️  Sample query returned no results"
+    echo "⚠️  V2 Subgraph may not be deployed or synced yet"
+    echo "$TEST_RESULT"
 fi
 
 echo ""
-echo "========================================"
-echo "Health check complete!"
+echo "🧪 Testing Tokens Subgraph Query:"
+TEST_RESULT=$(curl -s http://localhost:8000/subgraphs/name/$SUBGRAPH_TOKENS_NAME \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ tokens(first: 1) { id symbol } }"}' 2>/dev/null || echo '{"errors":[{"message":"subgraph not found"}]}')
+
+if echo "$TEST_RESULT" | grep -q '"data"'; then
+    echo "✅ Tokens Subgraph is queryable"
+    echo "$TEST_RESULT" | python3 -m json.tool 2>/dev/null || echo "$TEST_RESULT"
+else
+    echo "⚠️  Tokens Subgraph may not be deployed or synced yet"
+    echo "$TEST_RESULT"
+fi
+
 echo ""
-echo "GraphQL Playground: $GRAPH_NODE_URL/subgraphs/name/$SUBGRAPH_NAME"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "💡 Useful commands:"
+echo "   View logs:       docker-compose logs -f graph-node"
+echo "   Restart:         docker-compose restart"
+echo "   Stop:            docker-compose down"
+echo "   Redeploy:        yarn deploy:local && yarn deploy:tokens:local"
+echo ""

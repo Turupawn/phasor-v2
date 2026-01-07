@@ -7,8 +7,10 @@
     "lint": "eslint . --ext .ts --fix",
     "build": "cross-env ts-node ./script/build",
     "deploy:local": "./scripts/deploy-local.sh",
+    "deploy:tokens:local": "./scripts/deploy-tokens-local.sh",
     "deploy:hosted": "./scripts/deploy-hosted.sh",
     "deploy:testnet": "./scripts/deploy-testnet.sh",
+    "deploy:tokens:testnet": "./scripts/deploy-tokens-testnet.sh",
     "health": "./scripts/check-health.sh"
   },
   "devDependencies": {

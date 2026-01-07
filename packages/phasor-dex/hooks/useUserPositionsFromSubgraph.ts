@@ -3,6 +3,7 @@ import { useAccount, useReadContract } from "wagmi";
 import { useMemo } from "react";
 import { Address, erc20Abi, parseUnits } from "viem";
 import { GET_USER_POSITIONS } from "@/lib/graphql/queries";
+import { apolloClient } from "@/lib/apollo-client";
 import { UserPosition, Pool, Token } from "@/types";
 
 interface SubgraphToken {
@@ -57,11 +58,12 @@ export function useUserPositionsFromSubgraph(): UseUserPositionsFromSubgraphResu
   const { data, loading, error, refetch } = useQuery<GetUserPositionsData>(
     GET_USER_POSITIONS,
     {
+      client: apolloClient,
       variables: {
         user: account?.toLowerCase() || "",
       },
       skip: !account,
-      pollInterval: 30000, // Refresh every 30 seconds
+      // Remove pollInterval to prevent too many requests
     }
   );
 

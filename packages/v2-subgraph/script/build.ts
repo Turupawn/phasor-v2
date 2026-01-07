@@ -4,13 +4,13 @@ import { build, deploy } from './utils/deploy-utils'
 import { validateNetwork, validateSubgraphType } from './utils/prepareNetwork'
 
 interface BuildArgs {
-  network: string;
-  subgraphType: string;
-  deploy: boolean;
+  network: string
+  subgraphType: string
+  deploy: boolean
 }
 
 async function main() {
-  const argv = await yargs(process.argv.slice(2))
+  const argv = (await yargs(process.argv.slice(2))
     .option('network', {
       alias: 'n',
       description: 'Network to build for',
@@ -29,7 +29,7 @@ async function main() {
       type: 'boolean',
       default: false,
     })
-    .help().argv as BuildArgs
+    .help().argv) as BuildArgs
   validateNetwork(argv.network)
   validateSubgraphType(argv.subgraphType)
   await build(argv.network, argv.subgraphType)

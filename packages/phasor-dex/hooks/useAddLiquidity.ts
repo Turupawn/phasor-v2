@@ -5,6 +5,7 @@ import {
   useWaitForTransactionReceipt,
   useReadContract,
   useGasPrice,
+  usePublicClient,
 } from "wagmi";
 import { Address, erc20Abi, parseUnits, formatUnits } from "viem";
 import { Token, AddLiquidityQuote } from "@/types";
@@ -45,7 +46,8 @@ export function useAddLiquidity(
   const { address: account } = useAccount();
   const { slippageTolerance, deadline } = useSettingsStore();
   const { addTransaction } = useTransactionStore();
-  
+  const publicClient = usePublicClient();
+
   const [error, setError] = useState<string | null>(null);
 
   // Get pair reserves
@@ -190,24 +192,21 @@ export function useAddLiquidity(
     error: writeErrorAddLiquidity,
   } = useWriteContract();
 
-  // Log write errors
+  // Handle write errors
   useEffect(() => {
     if (writeErrorA) {
-      console.error('[useAddLiquidity] Write error A:', writeErrorA);
       setError(writeErrorA.message);
     }
   }, [writeErrorA]);
 
   useEffect(() => {
     if (writeErrorB) {
-      console.error('[useAddLiquidity] Write error B:', writeErrorB);
       setError(writeErrorB.message);
     }
   }, [writeErrorB]);
 
   useEffect(() => {
     if (writeErrorAddLiquidity) {
-      console.error('[useAddLiquidity] Write error add liquidity:', writeErrorAddLiquidity);
       setError(writeErrorAddLiquidity.message);
     }
   }, [writeErrorAddLiquidity]);
@@ -273,7 +272,6 @@ export function useAddLiquidity(
         args: [CONTRACTS.ROUTER, parsedAmountA],
       });
     } catch (err: any) {
-      console.error('[approveA] Error:', err);
       setError(err?.message || "Approval failed");
     }
   }, [tokenA, account, parsedAmountA, writeApproveA]);
@@ -295,7 +293,7 @@ export function useAddLiquidity(
   }, [tokenB, account, parsedAmountB, writeApproveB]);
 
   const addLiquidity = useCallback(async () => {
-    if (!tokenA || !tokenB || !account || !liquidityQuote) return;
+    if (!tokenA || !tokenB || !account || !liquidityQuote || !publicClient) return;
     setError(null);
 
     const txDeadline = getDeadline(deadline);
@@ -303,15 +301,6 @@ export function useAddLiquidity(
     // Calculate minimum amounts with slippage
     const amountAMin = (parsedAmountA * BigInt(10000 - slippageTolerance)) / BigInt(10000);
     const amountBMin = (parsedAmountB * BigInt(10000 - slippageTolerance)) / BigInt(10000);
-
-    console.log('[addLiquidity] Attempting to add liquidity:', {
-      tokenA: tokenA.symbol,
-      tokenB: tokenB.symbol,
-      amountA: parsedAmountA.toString(),
-      amountB: parsedAmountB.toString(),
-      router: CONTRACTS.ROUTER,
-      deadline: txDeadline.toString(),
-    });
 
     try {
       const isANative = tokenA.address === NATIVE_TOKEN.address;
@@ -324,17 +313,49 @@ export function useAddLiquidity(
         const ethAmount = isANative ? parsedAmountA : parsedAmountB;
         const ethMin = isANative ? amountAMin : amountBMin;
 
-        console.log('[addLiquidity] Adding liquidity with ETH');
+        // Estimate gas first
+        const estimatedGas = await publicClient.estimateContractGas({
+          address: CONTRACTS.ROUTER,
+          abi: ROUTER_ABI,
+          functionName: "addLiquidityETH",
+          args: [token.address, tokenAmount, tokenMin, ethMin, account, txDeadline],
+          value: ethAmount,
+          account,
+        });
+
+        // Add 20% buffer to estimated gas
+        const gasLimit = (estimatedGas * BigInt(120)) / BigInt(100);
+
         writeAddLiquidity({
           address: CONTRACTS.ROUTER,
           abi: ROUTER_ABI,
           functionName: "addLiquidityETH",
           args: [token.address, tokenAmount, tokenMin, ethMin, account, txDeadline],
           value: ethAmount,
-          gas: BigInt(500000), // Manual gas limit for Monad testnet
+          gas: gasLimit,
         });
       } else {
-        console.log('[addLiquidity] Adding liquidity with ERC20 tokens');
+        // Estimate gas first
+        const estimatedGas = await publicClient.estimateContractGas({
+          address: CONTRACTS.ROUTER,
+          abi: ROUTER_ABI,
+          functionName: "addLiquidity",
+          args: [
+            tokenA.address,
+            tokenB.address,
+            parsedAmountA,
+            parsedAmountB,
+            amountAMin,
+            amountBMin,
+            account,
+            txDeadline,
+          ],
+          account,
+        });
+
+        // Add 20% buffer to estimated gas
+        const gasLimit = (estimatedGas * BigInt(120)) / BigInt(100);
+
         writeAddLiquidity({
           address: CONTRACTS.ROUTER,
           abi: ROUTER_ABI,
@@ -349,7 +370,7 @@ export function useAddLiquidity(
             account,
             txDeadline,
           ],
-          gas: BigInt(500000), // Manual gas limit for Monad testnet
+          gas: gasLimit,
         });
       }
 
@@ -361,7 +382,6 @@ export function useAddLiquidity(
         });
       }
     } catch (err: any) {
-      console.error('[addLiquidity] Error:', err);
       setError(err?.message || "Add liquidity failed");
     }
   }, [
@@ -376,6 +396,7 @@ export function useAddLiquidity(
     writeAddLiquidity,
     addLiquidityHash,
     addTransaction,
+    publicClient,
   ]);
 
   // Get current gas price

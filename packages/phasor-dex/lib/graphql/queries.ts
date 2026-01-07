@@ -21,13 +21,9 @@ export const GET_POOL = gql`
   query GetPool($id: ID!) {
     pair(id: $id) {
       ...PairFields
-      pairDayData(first: 7, orderBy: date, orderDirection: desc) {
-        ...PairDayDataFields
-      }
     }
   }
   ${PAIR_FIELDS}
-  ${PAIR_DAY_DATA_FIELDS}
 `;
 
 export const GET_PAIR_CHART_DATA = gql`
@@ -149,6 +145,120 @@ export const GET_TOKENS = gql`
       decimals
       tradeVolumeUSD
       totalLiquidity
+    }
+  }
+`;
+
+export const GET_BUNDLE = gql`
+  query GetBundle {
+    bundle(id: "1") {
+      id
+      ethPrice
+    }
+  }
+`;
+
+export const GET_TOKEN_PRICES = gql`
+  query GetTokenPrices($tokenIds: [Bytes!]!, $timestamp24hAgo: Int!) {
+    bundle(id: "1") {
+      ethPrice
+    }
+    tokens(where: { id_in: $tokenIds }) {
+      id
+      symbol
+      name
+      decimals
+      derivedETH
+    }
+    tokenDayDatas(where: { date: $timestamp24hAgo }, first: 1000) {
+      token {
+        id
+      }
+      priceUSD
+      date
+    }
+  }
+`;
+
+export const GET_USER_TRANSACTIONS = gql`
+  query GetUserTransactions($user: Bytes!, $first: Int = 50) {
+    mints(
+      where: { to: $user }
+      orderBy: timestamp
+      orderDirection: desc
+      first: $first
+    ) {
+      id
+      timestamp
+      pair {
+        id
+        token0 {
+          id
+          symbol
+          decimals
+        }
+        token1 {
+          id
+          symbol
+          decimals
+        }
+      }
+      amount0
+      amount1
+      amountUSD
+      transaction {
+        id
+      }
+    }
+    burns(
+      where: { sender: $user }
+      orderBy: timestamp
+      orderDirection: desc
+      first: $first
+    ) {
+      id
+      timestamp
+      pair {
+        id
+        token0 {
+          id
+          symbol
+          decimals
+        }
+        token1 {
+          id
+          symbol
+          decimals
+        }
+      }
+      amount0
+      amount1
+      amountUSD
+      transaction {
+        id
+      }
+    }
+  }
+`;
+
+export const GET_TOKEN_PRICE_HISTORY = gql`
+  query GetTokenPriceHistory($startTime: Int!) {
+    bundle(id: "1") {
+      ethPrice
+    }
+    tokenDayDatas(
+      where: { date_gte: $startTime }
+      orderBy: date
+      orderDirection: asc
+      first: 1000
+    ) {
+      date
+      token {
+        id
+        decimals
+      }
+      priceUSD
+      dailyVolumeUSD
     }
   }
 `;

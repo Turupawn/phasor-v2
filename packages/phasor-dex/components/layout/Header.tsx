@@ -20,6 +20,7 @@ import StatusIndicator from "@/components/ui/status-indicator";
 const NAV_ITEMS = [
   { name: "Swap", link: "/swap" },
   { name: "Pools", link: "/pools" },
+  { name: "Portfolio", link: "/portfolio" },
 ];
 
 export function Header() {

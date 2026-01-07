@@ -9,11 +9,11 @@ const focusCards = [
   },
   {
     title: "Deep Liquidity Pools",
-    src: "/focus-wave-2.svg",
+    src: "/focus-wave-3.svg",
   },
   {
     title: "Powered by Monad",
-    src: "/focus-wave-3.svg",
+    src: "/focus-wave-2.svg",
   },
 ];
 

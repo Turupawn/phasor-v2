@@ -6,6 +6,7 @@ import { Pool, Token } from "@/types";
 import { PAIR_ABI } from "@/config";
 import { DEFAULT_TOKENS } from "@/config/chains";
 import { GET_POOL } from "@/lib/graphql/queries";
+import { apolloClient } from "@/lib/apollo-client";
 
 interface UsePoolDetailResult {
   pool: Pool | null;
@@ -67,9 +68,22 @@ export function usePoolDetail(poolAddress: string): UsePoolDetailResult {
 
   // Fetch enrichment data from subgraph
   const { data: subgraphData, loading: isSubgraphLoading, error: subgraphError } = useQuery<SubgraphPairData>(GET_POOL, {
+    client: apolloClient,
     variables: { id: poolAddress.toLowerCase() },
     skip: !poolAddress,
   });
+
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log('[usePoolDetail] State:', {
+      poolAddress,
+      isContractLoading,
+      isSubgraphLoading,
+      contractData: contractData?.map(r => ({ status: r.status, result: r.status === 'success' ? 'success' : r.error })),
+      subgraphData,
+      subgraphError: subgraphError?.message,
+    });
+  }
 
   // Combine contract and subgraph data
   const pool = useMemo((): Pool | null => {
@@ -94,32 +108,34 @@ export function usePoolDetail(poolAddress: string): UsePoolDetailResult {
     // Find token metadata from DEFAULT_TOKENS or subgraph
     const subgraphPair = subgraphData?.pair;
 
+    // Prefer token list over subgraph for metadata
+    const token0FromList = DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token0Address.toLowerCase());
+    const token1FromList = DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token1Address.toLowerCase());
+
     const token0: Token = {
       address: token0Address,
-      symbol: subgraphPair?.token0.symbol ||
-              DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token0Address.toLowerCase())?.symbol ||
+      symbol: token0FromList?.symbol ||
+              (subgraphPair?.token0.symbol !== "UNI-V2" ? subgraphPair?.token0.symbol : undefined) ||
               `Token${token0Address.slice(0, 6)}`,
-      name: subgraphPair?.token0.name ||
-            DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token0Address.toLowerCase())?.name ||
+      name: token0FromList?.name ||
+            (subgraphPair?.token0.name !== "Uniswap V2" ? subgraphPair?.token0.name : undefined) ||
             "Unknown Token",
-      decimals: subgraphPair?.token0.decimals ?
-                parseInt(subgraphPair.token0.decimals) :
-                (DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token0Address.toLowerCase())?.decimals || 18),
-      logoURI: DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token0Address.toLowerCase())?.logoURI,
+      decimals: token0FromList?.decimals ||
+                (subgraphPair?.token0.decimals ? parseInt(subgraphPair.token0.decimals) : 18),
+      logoURI: token0FromList?.logoURI,
     };
 
     const token1: Token = {
       address: token1Address,
-      symbol: subgraphPair?.token1.symbol ||
-              DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token1Address.toLowerCase())?.symbol ||
+      symbol: token1FromList?.symbol ||
+              (subgraphPair?.token1.symbol !== "UNI-V2" ? subgraphPair?.token1.symbol : undefined) ||
               `Token${token1Address.slice(0, 6)}`,
-      name: subgraphPair?.token1.name ||
-            DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token1Address.toLowerCase())?.name ||
+      name: token1FromList?.name ||
+            (subgraphPair?.token1.name !== "Uniswap V2" ? subgraphPair?.token1.name : undefined) ||
             "Unknown Token",
-      decimals: subgraphPair?.token1.decimals ?
-                parseInt(subgraphPair.token1.decimals) :
-                (DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token1Address.toLowerCase())?.decimals || 18),
-      logoURI: DEFAULT_TOKENS.find(t => t.address.toLowerCase() === token1Address.toLowerCase())?.logoURI,
+      decimals: token1FromList?.decimals ||
+                (subgraphPair?.token1.decimals ? parseInt(subgraphPair.token1.decimals) : 18),
+      logoURI: token1FromList?.logoURI,
     };
 
     // Calculate enrichment data from subgraph if available

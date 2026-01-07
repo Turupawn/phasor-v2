@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Deploy subgraph to local Graph node
-# Usage: ./scripts/deploy-local.sh
+# Deploy v2-tokens subgraph to local Graph node
+# Usage: ./scripts/deploy-tokens-local.sh
 
 set -e
 
@@ -13,9 +13,9 @@ fi
 # Set defaults
 GRAPH_NODE=${GRAPH_NODE_ADMIN:-http://localhost:8020}
 IPFS_NODE=${GRAPH_IPFS:-http://localhost:5001}
-SUBGRAPH_NAME=${SUBGRAPH_NAME:-phasor/v2}
+SUBGRAPH_NAME=${SUBGRAPH_TOKENS_NAME:-phasor/v2-tokens}
 
-echo "📦 Deploying V2 Subgraph to local Graph node..."
+echo "📦 Deploying V2-Tokens Subgraph to local Graph node..."
 echo "   Graph Node: $GRAPH_NODE"
 echo "   IPFS: $IPFS_NODE"
 echo "   Subgraph: $SUBGRAPH_NAME"
@@ -29,19 +29,19 @@ if ! curl -s $GRAPH_NODE > /dev/null 2>&1; then
 fi
 
 # Build subgraph
-echo "🔨 Building subgraph..."
-yarn build --network monad-testnet --subgraph-type v2
+echo "🔨 Building v2-tokens subgraph..."
+yarn build --network monad-testnet --subgraph-type v2-tokens
 
 # Create subgraph (ignore error if already exists)
-echo "📝 Creating subgraph..."
+echo "📝 Creating v2-tokens subgraph..."
 yarn graph create --node $GRAPH_NODE/ $SUBGRAPH_NAME || true
 
 # Deploy subgraph
-echo "🚀 Deploying subgraph..."
-yarn graph deploy --node $GRAPH_NODE/ --ipfs $IPFS_NODE $SUBGRAPH_NAME v2-subgraph.yaml --version-label v$(date +%s)
+echo "🚀 Deploying v2-tokens subgraph..."
+yarn graph deploy --node $GRAPH_NODE/ --ipfs $IPFS_NODE $SUBGRAPH_NAME v2-tokens-subgraph.yaml --version-label v$(date +%s)
 
 echo ""
-echo "✅ V2 Subgraph deployed successfully!"
+echo "✅ V2-Tokens subgraph deployed successfully!"
 echo "   GraphQL endpoint: http://localhost:8000/subgraphs/name/$SUBGRAPH_NAME"
 echo ""
 echo "🔍 Check indexing status:"

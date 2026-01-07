@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { Address, parseUnits } from "viem";
 import { GET_POOLS } from "@/lib/graphql/queries";
+import { apolloClient } from "@/lib/apollo-client";
 import { Pool, Token } from "@/types";
 
 interface SubgraphToken {
@@ -39,16 +40,28 @@ export function usePoolsFromSubgraph(
   limit: number = 100
 ): UsePoolsFromSubgraphResult {
   const { data, loading, error, refetch } = useQuery<GetPoolsData>(GET_POOLS, {
+    client: apolloClient,
     variables: {
       first: limit,
       skip: 0,
       orderBy: "reserveUSD",
       orderDirection: "desc",
     },
-    pollInterval: 30000, // Refresh every 30 seconds
+    // Remove pollInterval to prevent too many requests
     errorPolicy: "all", // Return partial data on error
     fetchPolicy: "cache-first", // Use cache to avoid errors on initial load
   });
+
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log('[usePoolsFromSubgraph] Query state:', {
+      loading,
+      error: error?.message,
+      dataExists: !!data,
+      pairsCount: data?.pairs?.length || 0,
+      pairs: data?.pairs,
+    });
+  }
 
   const pools = useMemo(() => {
     if (!data?.pairs) return [];
