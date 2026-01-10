@@ -79,14 +79,6 @@ export function usePools() {
   // Process the data into Pool objects
   const pools: Pool[] = useMemo(() => {
     if (!pairAddresses || !pairData || pairData.length === 0) {
-      if (typeof window !== 'undefined') {
-        console.log('[usePools] No pool data available:', {
-          hasPairAddresses: !!pairAddresses,
-          pairAddressesLength: pairAddresses?.length,
-          hasPairData: !!pairData,
-          pairDataLength: pairData?.length
-        });
-      }
       return [];
     }
 
@@ -137,17 +129,6 @@ export function usePools() {
         totalSupply,
         fee: 30, // 0.3% fee (Uniswap V2 standard)
       });
-    }
-
-    if (typeof window !== 'undefined' && pools.length > 0) {
-      console.log(`[usePools] ${new Date().toISOString()} - Successfully processed pools:`, pools.length, pools.map(p => ({
-        address: p.address,
-        token0: p.token0.symbol,
-        token1: p.token1.symbol,
-        reserve0: p.reserve0.toString(),
-        reserve1: p.reserve1.toString(),
-        totalSupply: p.totalSupply.toString()
-      })));
     }
 
     return pools;

@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PortfolioTransaction } from "@/types";
-import { ActivityRow } from "./ActivityRow";
+import { ActivityRow, ActivityCard } from "./ActivityRow";
 
 interface ActivityTableProps {
   transactions: PortfolioTransaction[];
@@ -73,7 +73,7 @@ export function ActivityTable({
       {/* Mobile Cards */}
       <div className="md:hidden">
         {transactions.map(transaction => (
-          <ActivityRow key={transaction.id} transaction={transaction} />
+          <ActivityCard key={transaction.id} transaction={transaction} />
         ))}
       </div>
 

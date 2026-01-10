@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { ArrowDown, ChevronDown, Loader2 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TokenSelector } from "@/components/common/TokenSelector";
 import { SettingsPopover } from "@/components/common/SettingsPopover";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
+import { DEFAULT_TOKENS } from "@/config/chains";
 
 interface TokenInputProps {
   label: string;
@@ -119,6 +121,7 @@ function TokenInput({
 
 export function SwapCard() {
   const { isConnected, address } = useAccount();
+  const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
   const [mounted, setMounted] = useState(false);
 
   const [inputToken, setInputToken] = useState<Token | null>(null);
@@ -130,6 +133,32 @@ export function SwapCard() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Pre-select tokens from URL parameters
+  useEffect(() => {
+    if (!mounted || !searchParams) return;
+
+    const inputCurrency = searchParams.get("inputCurrency");
+    const outputCurrency = searchParams.get("outputCurrency");
+
+    if (inputCurrency && !inputToken) {
+      const token = DEFAULT_TOKENS.find(
+        (t) => t.address.toLowerCase() === inputCurrency.toLowerCase()
+      );
+      if (token) {
+        setInputToken(token);
+      }
+    }
+
+    if (outputCurrency && !outputToken) {
+      const token = DEFAULT_TOKENS.find(
+        (t) => t.address.toLowerCase() === outputCurrency.toLowerCase()
+      );
+      if (token) {
+        setOutputToken(token);
+      }
+    }
+  }, [mounted, searchParams, inputToken, outputToken]);
 
   const {
     quote,

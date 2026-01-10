@@ -107,6 +107,8 @@ export function useTokenBalances(tokens: Token[], enabled: boolean = true): Map<
     address: account,
     query: {
       enabled: enabled && !!account && hasNativeToken,
+      staleTime: 10_000, // Consider data fresh for 10 seconds
+      gcTime: 30_000, // Keep in cache for 30 seconds
     },
   });
 
@@ -126,6 +128,8 @@ export function useTokenBalances(tokens: Token[], enabled: boolean = true): Map<
     contracts,
     query: {
       enabled: enabled && !!account && erc20Tokens.length > 0,
+      staleTime: 10_000, // Consider data fresh for 10 seconds
+      gcTime: 30_000, // Keep in cache for 30 seconds
     },
   });
 

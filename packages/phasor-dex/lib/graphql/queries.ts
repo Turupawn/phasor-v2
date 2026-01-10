@@ -161,6 +161,7 @@ export const GET_BUNDLE = gql`
 export const GET_TOKEN_PRICES = gql`
   query GetTokenPrices($tokenIds: [Bytes!]!, $timestamp24hAgo: Int!) {
     bundle(id: "1") {
+      id
       ethPrice
     }
     tokens(where: { id_in: $tokenIds }) {
@@ -171,6 +172,7 @@ export const GET_TOKEN_PRICES = gql`
       derivedETH
     }
     tokenDayDatas(where: { date: $timestamp24hAgo }, first: 1000) {
+      id
       token {
         id
       }
@@ -244,6 +246,7 @@ export const GET_USER_TRANSACTIONS = gql`
 export const GET_TOKEN_PRICE_HISTORY = gql`
   query GetTokenPriceHistory($startTime: Int!) {
     bundle(id: "1") {
+      id
       ethPrice
     }
     tokenDayDatas(
@@ -252,6 +255,7 @@ export const GET_TOKEN_PRICE_HISTORY = gql`
       orderDirection: asc
       first: 1000
     ) {
+      id
       date
       token {
         id

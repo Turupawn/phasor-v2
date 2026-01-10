@@ -142,10 +142,6 @@ NEXT_PUBLIC_DEFAULT_FACTORY_ADDRESS=0xYourTestnetFactoryAddress
 NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS=0xYourTestnetRouterAddress
 NEXT_PUBLIC_DEFAULT_WMON_ADDRESS=0xYourTestnetWMONAddress
 
-# Test Tokens
-NEXT_PUBLIC_DEFAULT_TKN1_ADDRESS=0xYourTestToken1Address
-NEXT_PUBLIC_DEFAULT_TKN2_ADDRESS=0xYourTestToken2Address
-
 # Subgraph (from Graph Studio)
 NEXT_PUBLIC_SUBGRAPH_URL=https://api.studio.thegraph.com/query/<ID>/phasor-v2-testnet/version/latest
 ```

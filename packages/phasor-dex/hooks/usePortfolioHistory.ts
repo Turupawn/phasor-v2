@@ -99,6 +99,8 @@ export function usePortfolioHistory(
       startTime,
     },
     skip: !userAddress || allTokenAddresses.length === 0,
+    fetchPolicy: 'cache-first', // Use cached data when available
+    nextFetchPolicy: 'cache-first', // Continue using cache after initial fetch
   });
 
   // Process historical data
