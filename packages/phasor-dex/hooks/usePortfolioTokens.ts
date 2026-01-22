@@ -19,6 +19,18 @@ export function usePortfolioTokens(tokenList: Token[]): UsePortfolioTokensResult
   // Get balances for all tokens
   const balances = useTokenBalances(tokenList, !!userAddress);
 
+  // Debug logging
+  console.log('Portfolio Debug:', {
+    userAddress,
+    balancesSize: balances.size,
+    balancesEntries: Array.from(balances.entries()).map(([addr, bal]) => ({
+      address: addr,
+      balance: bal.toString()
+    })),
+    tokenListLength: tokenList.length,
+    tokenListAddresses: tokenList.map(t => t.address)
+  });
+
   // Extract token addresses that have non-zero balances
   const tokensWithBalance = useMemo(() => {
     return tokenList.filter(token => {
@@ -42,7 +54,7 @@ export function usePortfolioTokens(tokenList: Token[]): UsePortfolioTokensResult
 
     tokensWithBalance.forEach(token => {
       const balance = balances.get(token.address) || BigInt(0);
-      const priceData = prices.get(token.address);
+      const priceData = prices.get(token.address.toLowerCase() as Address);
 
       if (!priceData || balance === BigInt(0)) {
         return;

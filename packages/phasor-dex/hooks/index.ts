@@ -7,3 +7,4 @@ export * from "./usePoolsHybrid";
 export * from "./usePoolDetail";
 export * from "./useUserPositions";
 export * from "./useImportToken";
+export * from "./usePoolChartData";

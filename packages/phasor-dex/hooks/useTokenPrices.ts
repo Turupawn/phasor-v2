@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { GET_TOKEN_PRICES } from "@/lib/graphql/queries";
-import { tokensApolloClient } from "@/lib/apollo-client";
+import { apolloClient } from "@/lib/apollo-client";
 
 export interface TokenPrice {
   priceUSD: number;
@@ -46,7 +46,7 @@ export function useTokenPrices(tokenAddresses: Address[]): UseTokenPricesResult 
   }, []);
 
   const { data, loading, error } = useQuery<TokenPricesData>(GET_TOKEN_PRICES, {
-    client: tokensApolloClient,
+    client: apolloClient,
     variables: {
       tokenIds: tokenAddresses.map(addr => addr.toLowerCase()),
       timestamp24hAgo,

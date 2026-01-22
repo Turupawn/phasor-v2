@@ -4,11 +4,11 @@ import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 
 const SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_SUBGRAPH_URL ||
-  "http://localhost:8000/subgraphs/name/phasor/phasor-v2";
+  "http://localhost:8000/subgraphs/name/phasor-v2";
 
 const TOKENS_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_TOKENS_SUBGRAPH_URL ||
-  "http://localhost:8000/subgraphs/name/phasor/phasor-v2-tokens";
+  "http://localhost:8000/subgraphs/name/v2-tokens";
 
 const createHttpLink = (uri: string) =>
   new HttpLink({

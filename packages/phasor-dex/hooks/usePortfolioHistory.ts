@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
 import { GET_TOKEN_PRICE_HISTORY } from "@/lib/graphql/queries";
-import { tokensApolloClient } from "@/lib/apollo-client";
+import { apolloClient } from "@/lib/apollo-client";
 import { useUserPositions } from "./useUserPositions";
 import { useTokenBalances } from "./useTokenBalance";
 import { PortfolioHistoryPoint, Token } from "@/types";
@@ -60,14 +60,14 @@ export function usePortfolioHistory(
     tokenList.forEach(token => {
       const balance = balances.get(token.address);
       if (balance && balance > BigInt(0)) {
-        addresses.add(token.address);
+        addresses.add(token.address.toLowerCase() as Address);
       }
     });
 
-    // Add tokens from LP positions
+    // Add tokens from LP positions (important for chart even if no current balance)
     positions.forEach(position => {
-      addresses.add(position.pool.token0.address);
-      addresses.add(position.pool.token1.address);
+      addresses.add(position.pool.token0.address.toLowerCase() as Address);
+      addresses.add(position.pool.token1.address.toLowerCase() as Address);
     });
 
     return Array.from(addresses);
@@ -93,12 +93,24 @@ export function usePortfolioHistory(
   }, [period]);
 
   // Fetch historical price data
+  // Don't skip if user has positions, even if they don't have current token balances
+  const shouldFetch = userAddress && (allTokenAddresses.length > 0 || positions.length > 0);
+
+  console.log('Portfolio History Query:', {
+    userAddress,
+    allTokenAddressesCount: allTokenAddresses.length,
+    positionsCount: positions.length,
+    shouldFetch,
+    startTime,
+    period
+  });
+
   const { data, loading, error } = useQuery<TokenPriceHistoryData>(GET_TOKEN_PRICE_HISTORY, {
-    client: tokensApolloClient,
+    client: apolloClient,
     variables: {
       startTime,
     },
-    skip: !userAddress || allTokenAddresses.length === 0,
+    skip: !shouldFetch,
     fetchPolicy: 'cache-first', // Use cached data when available
     nextFetchPolicy: 'cache-first', // Continue using cache after initial fetch
   });
@@ -106,8 +118,16 @@ export function usePortfolioHistory(
   // Process historical data
   const historyData = useMemo(() => {
     if (!data || !data.tokenDayDatas) {
+      console.log('Portfolio History: No data', { data, hasData: !!data, hasTokenDayDatas: !!data?.tokenDayDatas });
       return [];
     }
+
+    console.log('Portfolio History: Processing data', {
+      tokenDayDatasCount: data.tokenDayDatas.length,
+      allTokenAddresses,
+      positionsCount: positions.length,
+      balancesSize: balances.size
+    });
 
     // Group price data by date
     const pricesByDate = new Map<number, Map<Address, number>>();
@@ -117,8 +137,8 @@ export function usePortfolioHistory(
       const tokenId = dayData.token.id.toLowerCase() as Address;
       const priceUSD = parseFloat(dayData.priceUSD || "0");
 
-      // Only include tokens that the user holds
-      if (!allTokenAddresses.includes(tokenId)) {
+      // Only include tokens that the user holds or has in LP positions
+      if (allTokenAddresses.length > 0 && !allTokenAddresses.includes(tokenId)) {
         return;
       }
 
@@ -142,7 +162,7 @@ export function usePortfolioHistory(
       // Add token values
       tokenList.forEach(token => {
         const balance = balances.get(token.address);
-        const price = prices.get(token.address);
+        const price = prices.get(token.address.toLowerCase() as Address);
 
         if (balance && price) {
           const balanceFloat = Number(balance) / Math.pow(10, token.decimals);
@@ -152,8 +172,8 @@ export function usePortfolioHistory(
 
       // Add LP position values
       positions.forEach(position => {
-        const token0Price = prices.get(position.pool.token0.address);
-        const token1Price = prices.get(position.pool.token1.address);
+        const token0Price = prices.get(position.pool.token0.address.toLowerCase() as Address);
+        const token1Price = prices.get(position.pool.token1.address.toLowerCase() as Address);
 
         if (token0Price && token1Price) {
           const token0Amount =
