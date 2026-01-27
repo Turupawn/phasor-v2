@@ -6,6 +6,7 @@ import * as process from 'process'
 export enum NETWORK {
   MONAD = 'monad',
   MONAD_TESTNET = 'monad-testnet',
+  LOCAL = 'local',
 }
 
 export enum SUBGRAPH_TYPE {

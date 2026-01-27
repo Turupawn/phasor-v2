@@ -162,7 +162,33 @@ NEXT_PUBLIC_CHAIN_ID=10143
 NEXT_PUBLIC_DEFAULT_RPC_URL=http://127.0.0.1:8545
 ```
 
-### 5. Common Issues and Solutions
+### 5. Subgraph Network Configurations
+
+The subgraph has separate configurations for different environments:
+
+**Configuration Structure** (`packages/v2-subgraph/config/`):
+```
+config/
+├── local/           # For local Anvil development (updated by deploy script)
+│   ├── config.json  # Factory address, startBlock
+│   ├── chain.ts     # Token addresses, pair addresses
+│   └── .subgraph-env
+├── monad-testnet/   # For Monad testnet (static, real addresses)
+│   ├── config.json
+│   ├── chain.ts
+│   └── .subgraph-env
+└── monad/           # For Monad mainnet (future)
+```
+
+**Important**: The `local` config files are overwritten by `deploy-local-full.sh`. Never commit local addresses to `monad-testnet` config.
+
+**Why both have `network: monad-testnet`**: The graph-node's ethereum setting uses `monad-testnet` as the network name. The subgraph manifest must match this. The difference is only in the contract addresses.
+
+### 6. Common Issues and Solutions
+
+**Issue**: Graph-node shows "chain is defective" error
+- **Cause**: Anvil was restarted and got a new genesis hash, but graph-node database has old chain state
+- **Fix**: The deploy script now automatically wipes `data/postgres` and `data/ipfs` before starting graph-node
 
 **Issue**: Portfolio charts not showing data
 - **Cause**: Using wrong Apollo client or no LP positions detected
@@ -180,7 +206,7 @@ NEXT_PUBLIC_DEFAULT_RPC_URL=http://127.0.0.1:8545
 - **Cause**: Inconsistent address casing (checksummed vs lowercase)
 - **Fix**: Normalize all addresses to lowercase before queries and Map lookups
 
-### 6. Data Flow Architecture
+### 7. Data Flow Architecture
 
 ```
 User Action (Swap/Add Liquidity)
@@ -204,7 +230,7 @@ UI Components Display Results
 - `PairDayData/PairHourData` → aggregates by time period
 - `TokenDayData` → tracks token prices over time
 
-### 7. Testing Checklist
+### 8. Testing Checklist
 
 When making changes, verify:
 - [ ] Portfolio page loads with test account connected
@@ -215,7 +241,7 @@ When making changes, verify:
 - [ ] All addresses are lowercase in GraphQL queries
 - [ ] Queries use `apolloClient` (not `tokensApolloClient`)
 
-### 8. Future Enhancements (See dex-plan.md)
+### 9. Future Enhancements (See dex-plan.md)
 
 The `dex-plan.md` file contains a comprehensive 2-week sprint plan for:
 - PHASOR token (ERC20 with permit)
@@ -245,3 +271,20 @@ Refer to that document for implementation details when building these features.
 - Prefer Apollo Client hooks over manual fetch for GraphQL
 - Always lowercase addresses before subgraph queries
 - Include proper loading and error states in components
+
+## Problem-Solving Guidelines
+
+**IMPORTANT: Research before patching**
+
+When facing build errors, configuration issues, or tooling problems:
+
+1. **DO NOT assume or patch** - Don't try workarounds like skipping files, ignoring errors, or disabling features to make things "work" temporarily
+2. **Research first** - Use web search to find the proper solution. Most tools have documented ways to handle edge cases
+3. **Ask for references** - If you need documentation links or aren't sure where to look, ask the user
+4. **Understand the root cause** - Before implementing any fix, understand WHY the issue is happening
+
+**Example**: Foundry compilation errors with multiple Solidity versions
+- ❌ Wrong: Using `skip` or `ignore` to exclude problematic files
+- ✅ Right: Using `compilation_restrictions` to force correct compiler version per path (documented in Foundry's official docs)
+
+The goal is to fix issues properly, not to make errors disappear temporarily.

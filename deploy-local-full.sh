@@ -631,8 +631,8 @@ fs.writeFileSync('$tokenlist_file', JSON.stringify(tokenList, null, 2));
 update_subgraph_config() {
     log_step "Step 7: Updating subgraph configurations..."
 
-    # Update monad-testnet chain config for local deployment
-    local chain_config="packages/v2-subgraph/config/monad-testnet/chain.ts"
+    # Update local chain config for local deployment (preserves monad-testnet config)
+    local chain_config="packages/v2-subgraph/config/local/chain.ts"
     cat > $chain_config << EOF
 import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts/index'
 
@@ -692,7 +692,7 @@ export const STATIC_TOKEN_DEFINITIONS: TokenDefinition[] = [
 export const SKIP_TOTAL_SUPPLY: string[] = []
 EOF
 
-    log_success "Subgraph chain config updated (monad-testnet)"
+    log_success "Subgraph chain config updated (local)"
 }
 
 # ============================================================================
@@ -715,9 +715,10 @@ deploy_subgraph_background() {
         log_info "Using factory deployment block: $factory_block"
     fi
 
-    # Update config.json which is used by mustache to generate the YAML manifests
-    log_info "Updating config.json with factory address and startBlock..."
-    cat > config/monad-testnet/config.json << EOF
+    # Update local config.json which is used by mustache to generate the YAML manifests
+    # Note: network is still "monad-testnet" to match graph-node's ethereum setting
+    log_info "Updating local config.json with factory address and startBlock..."
+    cat > config/local/config.json << EOF
 {
   "network": "monad-testnet",
   "factory": "${ADDRESSES[Factory]}",
@@ -725,17 +726,20 @@ deploy_subgraph_background() {
 }
 EOF
 
-    # Check if graph-node is running and restart it with correct configuration
-    if curl -s http://127.0.0.1:8020 > /dev/null 2>&1; then
-        log_info "Restarting graph-node with local Anvil RPC..."
-        docker-compose stop graph-node > /dev/null 2>&1
-        sleep 2
-    else
-        log_info "Starting graph-node with local Anvil RPC..."
-    fi
+    # WIPE graph-node database to handle genesis hash changes when Anvil restarts
+    # This prevents "chain is defective" errors when the genesis hash changes
+    log_info "Wiping graph-node database for fresh sync..."
+    docker-compose down > /dev/null 2>&1 || true
+    # Use Docker to remove data directories (they're owned by Docker users)
+    docker run --rm -v "$(pwd)/data:/data" alpine sh -c "rm -rf /data/postgres /data/ipfs && mkdir -p /data/postgres /data/ipfs" > /dev/null 2>&1 || {
+        # Fallback: try direct removal (may need sudo on some systems)
+        rm -rf data/postgres data/ipfs 2>/dev/null || true
+        mkdir -p data/postgres data/ipfs
+    }
 
-    # Start graph-node pointing to local Anvil (unset MONAD_RPC_URL to use default from docker-compose)
-    MONAD_RPC_URL= docker-compose up -d graph-node > /dev/null 2>&1
+    # Start all graph-node services fresh
+    log_info "Starting graph-node with local Anvil RPC..."
+    MONAD_RPC_URL= docker-compose up -d > /dev/null 2>&1
 
     # Wait for graph-node to be ready
     log_info "Waiting for graph-node to be ready..."
@@ -756,14 +760,14 @@ EOF
 
     # Deploy V2 subgraph
     log_info "Building and deploying V2 subgraph..."
-    yarn build --network monad-testnet --subgraph-type v2 > /dev/null 2>&1
+    yarn build --network local --subgraph-type v2 > /dev/null 2>&1
     yarn graph create --node http://127.0.0.1:8020/ phasor-v2 > /dev/null 2>&1 || true
     yarn graph deploy --node http://127.0.0.1:8020/ --ipfs http://127.0.0.1:5001 phasor-v2 v2-subgraph.yaml --version-label v$(date +%s) > /dev/null 2>&1
     log_success "V2 subgraph deployed"
 
     # Deploy V2-Tokens subgraph
     log_info "Building and deploying V2-Tokens subgraph..."
-    yarn build --network monad-testnet --subgraph-type v2-tokens > /dev/null 2>&1
+    yarn build --network local --subgraph-type v2-tokens > /dev/null 2>&1
     yarn graph create --node http://127.0.0.1:8020/ phasor-v2-tokens > /dev/null 2>&1 || true
     yarn graph deploy --node http://127.0.0.1:8020/ --ipfs http://127.0.0.1:5001 phasor-v2-tokens v2-tokens-subgraph.yaml --version-label v$(date +%s) > /dev/null 2>&1
     log_success "V2-Tokens subgraph deployed"
