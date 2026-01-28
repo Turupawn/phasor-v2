@@ -9,8 +9,8 @@ export const REFERENCE_TOKEN = '0x0165878a594ca255338adfa4d48449f69242eb8f'
 // Stable token pairs for USD pricing (WMON-USDC, WMON-USDT)
 // These pairs are used to calculate Bundle.ethPrice for USD pricing
 export const STABLE_TOKEN_PAIRS: string[] = [
-  '0xdb305ccecc387e62eaea76b5ba233c8952037451', // WMON-USDC
-  '0xb15445013252958def0bf8f34591efef525af8a6', // WMON-USDT
+  '0x9056ecce1a1c2cfcbbce122aee988a47a2690cbc', // WMON-USDC
+  '0x1c002e94d86f30dd138d08692040c461cdbd2c7a', // WMON-USDT
 ]
 
 // Token whitelist - from tokenlist.json

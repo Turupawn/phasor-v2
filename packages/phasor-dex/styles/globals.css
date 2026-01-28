@@ -2,29 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'PP Supply Mono';
+  src: url('/fonts/PPSupplyMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    /* Terminal-inspired grayscale theme */
-    --background: 0 0% 7%;        /* #121212 - dark terminal background */
-    --foreground: 0 0% 85%;       /* #d9d9d9 - soft white text */
-    --card: 0 0% 10%;             /* #1a1a1a - slightly lighter cards */
-    --card-foreground: 0 0% 85%;
-    --popover: 0 0% 8%;           /* #141414 - popover bg */
-    --popover-foreground: 0 0% 85%;
-    --primary: 0 0% 75%;          /* #bfbfbf - light gray accent */
-    --primary-foreground: 0 0% 10%;
-    --secondary: 0 0% 15%;        /* #262626 - darker gray */
-    --secondary-foreground: 0 0% 85%;
-    --muted: 0 0% 20%;            /* #333333 - muted elements */
-    --muted-foreground: 0 0% 50%; /* #808080 - muted text */
-    --accent: 0 0% 65%;           /* #a6a6a6 - medium gray accent */
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 0% 60%;      /* #999999 - gray destructive */
-    --destructive-foreground: 0 0% 10%;
-    --border: 0 0% 25%;           /* #404040 - subtle borders */
-    --input: 0 0% 15%;            /* #262626 - input background */
-    --ring: 0 0% 50%;             /* #808080 - focus ring */
-    --radius: 0.25rem;            /* Minimal border radius */
+    /* Dark purple/blue theme for Phasor */
+    --background: 240 10% 4%;     /* #0a0a0f - deep dark background */
+    --foreground: 0 0% 90%;       /* #e5e5e5 - bright white text */
+    --card: 240 10% 8%;           /* #121218 - slightly lighter cards */
+    --card-foreground: 0 0% 90%;
+    --popover: 240 10% 6%;        /* #0e0e14 - popover bg */
+    --popover-foreground: 0 0% 90%;
+    --primary: 270 60% 60%;       /* Purple accent */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 10% 12%;     /* #1a1a22 - darker elements */
+    --secondary-foreground: 0 0% 90%;
+    --muted: 240 10% 15%;         /* #222230 - muted elements */
+    --muted-foreground: 0 0% 55%; /* #8c8c8c - muted text */
+    --accent: 270 50% 50%;        /* Purple accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 60% 50%;     /* Red destructive */
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 15%;        /* #222230 - subtle borders */
+    --input: 240 10% 10%;         /* #161620 - input background */
+    --ring: 270 60% 60%;          /* Purple focus ring */
+    --radius: 0.5rem;             /* Rounded corners */
   }
 }
 
@@ -149,4 +156,92 @@
   background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
   bottom: -150px;
   left: -150px;
+}
+
+/* Aurora Background Effect */
+.aurora-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.aurora {
+  position: absolute;
+  width: 150%;
+  height: 50%;
+  top: 30%;
+  left: -25%;
+  filter: blur(80px);
+  opacity: 0.4;
+}
+
+.aurora-1 {
+  background: radial-gradient(ellipse 80% 50% at 50% 50%,
+    rgba(88, 28, 135, 0.6) 0%,
+    rgba(59, 130, 246, 0.4) 40%,
+    transparent 70%);
+  animation: aurora-drift 15s ease-in-out infinite alternate;
+}
+
+.aurora-2 {
+  background: radial-gradient(ellipse 60% 40% at 60% 50%,
+    rgba(139, 92, 246, 0.5) 0%,
+    rgba(99, 102, 241, 0.3) 50%,
+    transparent 70%);
+  animation: aurora-drift 18s ease-in-out infinite alternate-reverse;
+  animation-delay: -5s;
+}
+
+.aurora-3 {
+  background: radial-gradient(ellipse 70% 45% at 40% 50%,
+    rgba(67, 56, 202, 0.4) 0%,
+    rgba(124, 58, 237, 0.3) 45%,
+    transparent 70%);
+  animation: aurora-drift 20s ease-in-out infinite alternate;
+  animation-delay: -10s;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translateX(-10%) translateY(-5%) rotate(-2deg);
+  }
+  100% {
+    transform: translateX(10%) translateY(5%) rotate(2deg);
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+}
+
+.glass-input:focus-within {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Badge styles */
+.badge-purple {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(167, 139, 250, 1);
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 9999px;
 }

@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.3.27",
     "@types/react-dom": "^18",
     "@types/three": "^0.182.0",
     "autoprefixer": "^10.0.1",
