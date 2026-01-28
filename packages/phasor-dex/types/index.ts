@@ -74,3 +74,30 @@ export interface SwapState {
   inputAmount: string;
   outputAmount: string;
 }
+
+// Portfolio types
+export interface PortfolioToken {
+  token: Token;
+  balance: bigint;
+  priceUSD: number;
+  price24hAgo: number;
+  valueUSD: number;
+  allocation: number; // percentage
+}
+
+export interface PortfolioTransaction {
+  id: string;
+  type: 'swap' | 'mint' | 'burn';
+  timestamp: number;
+  token0: Token;
+  token1: Token;
+  amount0: string;
+  amount1: string;
+  amountUSD: number;
+  hash: string;
+}
+
+export interface PortfolioHistoryPoint {
+  timestamp: number;
+  totalValueUSD: number;
+}

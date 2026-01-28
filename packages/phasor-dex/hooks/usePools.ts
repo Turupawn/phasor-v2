@@ -66,16 +66,21 @@ export function usePools() {
     });
   }, [pairAddresses]);
 
-  const { data: pairData, isLoading: isPairDataLoading } = useReadContracts({
+  const { data: pairData, isLoading: isPairDataLoading, refetch: refetchPairData } = useReadContracts({
     contracts: pairDataContracts,
     query: {
       enabled: pairDataContracts.length > 0,
+      // Reasonable defaults for production - data updates on block changes
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
     },
   });
 
   // Process the data into Pool objects
   const pools: Pool[] = useMemo(() => {
-    if (!pairAddresses || !pairData || pairData.length === 0) return [];
+    if (!pairAddresses || !pairData || pairData.length === 0) {
+      return [];
+    }
 
     const pools: Pool[] = [];
     const itemsPerPair = 4; // token0, token1, reserves, totalSupply
@@ -133,5 +138,6 @@ export function usePools() {
     pools,
     isLoading: isPairsLengthLoading || isPairAddressesLoading || isPairDataLoading,
     totalPairs,
+    refetch: refetchPairData,
   };
 }
