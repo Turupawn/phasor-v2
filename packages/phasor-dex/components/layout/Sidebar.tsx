@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "@/lib/utils";
@@ -44,11 +45,15 @@ export function Sidebar() {
         {/* Top Section */}
         <div className="space-y-8">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">P</span>
-            </div>
-            <span className="text-lg font-display font-medium text-white">phasor</span>
+          <Link href="/">
+            <Image
+              src="/images/logo.png"
+              alt="Phasor"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           {/* Connect Wallet */}
@@ -133,11 +138,15 @@ export function Sidebar() {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 bg-surface-1/90 backdrop-blur-md border-b border-white/5 z-50">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">P</span>
-          </div>
-          <span className="text-lg font-display font-medium text-white">phasor</span>
+        <Link href="/">
+          <Image
+            src="/images/logo.png"
+            alt="Phasor"
+            width={100}
+            height={32}
+            className="h-6 w-auto"
+            priority
+          />
         </Link>
 
         {/* Mobile Nav */}
