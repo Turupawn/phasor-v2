@@ -1,4 +1,17 @@
+import { Suspense } from "react";
 import { SwapCard } from "@/components/swap";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function SwapCardLoading() {
+  return (
+    <div className="w-full max-w-[320px] space-y-4">
+      <Skeleton className="h-8 w-20 bg-white/10" />
+      <Skeleton className="h-32 w-full bg-white/10 rounded-xl" />
+      <Skeleton className="h-32 w-full bg-white/10 rounded-xl" />
+      <Skeleton className="h-12 w-full bg-white/10 rounded-lg" />
+    </div>
+  );
+}
 
 export default function SwapPage() {
   return (
@@ -13,7 +26,9 @@ export default function SwapPage() {
 
       {/* Swap Card - Centered horizontally, above center vertically */}
       <div className="flex-1 flex items-center justify-center -mt-40">
-        <SwapCard />
+        <Suspense fallback={<SwapCardLoading />}>
+          <SwapCard />
+        </Suspense>
       </div>
     </div>
   );
