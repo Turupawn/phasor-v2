@@ -118,7 +118,7 @@ function TokenInput({
 
 export function SwapCard() {
   const { isConnected, address } = useAccount();
-  const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
 
   const [inputToken, setInputToken] = useState<Token | null>(null);
@@ -133,10 +133,10 @@ export function SwapCard() {
 
   // Pre-select tokens from URL parameters
   useEffect(() => {
-    if (!mounted || !searchParams) return;
+    if (!mounted) return;
 
-    const inputCurrency = searchParams.get("inputCurrency");
-    const outputCurrency = searchParams.get("outputCurrency");
+    const inputCurrency = searchParams?.get("inputCurrency");
+    const outputCurrency = searchParams?.get("outputCurrency");
 
     if (inputCurrency && !inputToken) {
       const token = DEFAULT_TOKENS.find(
@@ -263,7 +263,7 @@ export function SwapCard() {
             label="You receive"
             token={outputToken}
             amount={outputAmount}
-            onAmountChange={() => {}} // Output is calculated
+            onAmountChange={() => { }} // Output is calculated
             onTokenSelect={() => setSelectorOpen("output")}
             disabled
           />
@@ -287,8 +287,8 @@ export function SwapCard() {
                     quote.priceImpact > 3
                       ? "text-red-400"
                       : quote.priceImpact > 1
-                      ? "text-yellow-400"
-                      : "text-green-400"
+                        ? "text-yellow-400"
+                        : "text-green-400"
                   )}
                 >
                   {quote.priceImpact.toFixed(2)}%

@@ -40,8 +40,8 @@ export const CONTRACTS = {
   FACTORY: process.env.NEXT_PUBLIC_DEFAULT_FACTORY_ADDRESS as Address,
   ROUTER: process.env.NEXT_PUBLIC_DEFAULT_ROUTER_ADDRESS as Address,
 
-  // Wrapped MON (WMON) address
-  WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701") as Address,
+  // Wrapped MON (WMON) address - Official Monad Testnet WMON
+  WMON: (process.env.NEXT_PUBLIC_DEFAULT_WMON_ADDRESS || "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541") as Address,
 } as const;
 
 // ============================================
@@ -66,11 +66,11 @@ export const DEFAULT_TOKENS: Token[] = tokenList.tokens
 
 // Native token representation (for UI)
 export const NATIVE_TOKEN: Token = {
-      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, //TODO: CHANGE THIS TO ZERO ADDRESS
-      name: "Monad",
-      symbol: "MON",
-      decimals: 18,
-      logoURI: "https://raw.githubusercontent.com/monad-crypto/token-list/refs/heads/main/mainnet/MON/logo.svg"
+  address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, //TODO: CHANGE THIS TO ZERO ADDRESS
+  name: "Monad",
+  symbol: "MON",
+  decimals: 18,
+  logoURI: "https://raw.githubusercontent.com/monad-crypto/token-list/refs/heads/main/mainnet/MON/logo.svg"
 };
 
 // ============================================
@@ -80,13 +80,13 @@ export const NATIVE_TOKEN: Token = {
 export const DEX_SETTINGS = {
   // Default slippage tolerance in basis points (50 = 0.5%)
   DEFAULT_SLIPPAGE: 50,
-  
+
   // Default transaction deadline in minutes
   DEFAULT_DEADLINE: 20,
-  
+
   // Uniswap V2 fee (0.3%)
   SWAP_FEE_BPS: 30,
-  
+
   // Minimum liquidity locked forever (Uniswap V2)
   MINIMUM_LIQUIDITY: BigInt(1000),
 } as const;
