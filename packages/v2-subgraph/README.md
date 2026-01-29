@@ -1,6 +1,36 @@
-# Uniswap V2 and V2-Tokens Subgraph
+# Phasor V2 Subgraph
 
-## Development
+Indexes Phasor DEX events for fast querying via GraphQL.
+
+## Local Development (Phasor)
+
+For local development, use the deploy script from repository root:
+
+```bash
+# Full deployment includes subgraph setup
+./deploy-local-full.sh
+```
+
+Or manually:
+
+```bash
+# Start Graph Node (requires Docker)
+docker-compose up -d
+
+# Create and deploy subgraph
+npm run create-local
+npm run deploy-local
+```
+
+**Query Endpoint**: `http://localhost:8000/subgraphs/name/phasor-v2`
+
+## Documentation
+
+See [Infrastructure Documentation](../../docs/INFRASTRUCTURE.md) for detailed setup.
+
+---
+
+## Original Development (Uniswap)
 
 1. Install dependencies
 `yarn install`
