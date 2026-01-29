@@ -111,17 +111,28 @@ phasor-dex/
 
 ## Configuration
 
+### Deployed Contracts (Monad Testnet)
+
+The following contracts are deployed and verified on Monad Testnet:
+
+| Contract | Address |
+|----------|---------|
+| **UniswapV2Factory** | `0xD04c253F3bdf475Ee184a667F66C886940Bea6de` |
+| **UniswapV2Router02** | `0x8CA682eC73A7D92b27c79120C260862B3cc9Bd3B` |
+| **PHASOR Token** | `0x5c4673457F013c416eDE7d31628195904D3b5FDe` |
+| **WMON (Official)** | `0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541` |
+
+**Active Pool:** MON/PHASOR at `0x32db15e63c9e50Ce98a7E464119985690F7eD292`
+
 ### Contract Addresses
 
 Update `config/chains.ts` with your deployed contract addresses:
 
 ```typescript
 export const CONTRACTS = {
-  FACTORY: "0x...", // Your Factory address
-  ROUTER: "0x...",  // Your Router address
-  WMON: "0x...",    // Wrapped Monad address
-  USDC: "0x...",    // USDC address
-  USDT: "0x...",    // USDT address
+  FACTORY: "0xD04c253F3bdf475Ee184a667F66C886940Bea6de",
+  ROUTER: "0x8CA682eC73A7D92b27c79120C260862B3cc9Bd3B",
+  WMON: "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541",
 } as const;
 ```
 
@@ -220,6 +231,15 @@ npm run start
 - Slippage protection on all swaps
 - Transaction deadline protection
 - No private keys are ever stored
+
+## Documentation
+
+For detailed technical documentation, see:
+
+- [Architecture Overview](../../docs/ARCHITECTURE.md)
+- [Frontend Documentation](../../docs/FRONTEND.md)
+- [Smart Contracts](../../docs/SMART_CONTRACTS.md)
+- [Infrastructure](../../docs/INFRASTRUCTURE.md)
 
 ## License
 

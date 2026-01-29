@@ -5,3 +5,7 @@ out
 .nx/cache
 .nx/workspace-data
 vitest.config.*.timestamp*
+.env
+
+# Docker volumes
+data/
