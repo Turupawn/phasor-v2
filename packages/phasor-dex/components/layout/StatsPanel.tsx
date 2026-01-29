@@ -41,15 +41,19 @@ function formatNumber(value: string | number, decimals: number = 2): string {
 }
 
 export function StatsPanel() {
-  const { data } = useQuery<FactoryStatsQueryResult>(FACTORY_STATS_QUERY, {
+  const { data, loading, error } = useQuery<FactoryStatsQueryResult>(FACTORY_STATS_QUERY, {
     client: apolloClient,
-    pollInterval: 30000, // Refresh every 30 seconds
+    pollInterval: 30000,
+    // Skip query errors silently when subgraph is not available
+    errorPolicy: "ignore",
   });
 
+  // Use data from query or fallback to initial values
   const factory = data?.uniswapFactories?.[0];
   const totalVolume = factory?.totalVolumeUSD || "0";
   const totalLiquidity = factory?.totalLiquidityUSD || "0";
-  const pairCount = factory?.pairCount || 0;
+  // Default to 1 pair (MON/PHASOR) when subgraph is not available
+  const pairCount = factory?.pairCount || (loading || error ? 1 : 0);
 
   return (
     <aside className="hidden lg:flex fixed right-0 bottom-0 w-[200px] flex-col justify-end p-6 pb-20 pr-6 z-40">

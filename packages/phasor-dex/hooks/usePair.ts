@@ -1,6 +1,6 @@
 import { useReadContract, useReadContracts } from "wagmi";
 import { Address, zeroAddress } from "viem";
-import { CONTRACTS, FACTORY_ABI, PAIR_ABI } from "@/config";
+import { CONTRACTS, FACTORY_ABI, PAIR_ABI, NATIVE_TOKEN } from "@/config";
 import { Token, Pool } from "@/types";
 import { sortTokens } from "@/lib/utils";
 
@@ -15,10 +15,24 @@ interface UsePairResult {
   refetch: () => void;
 }
 
+// Helper to convert native token address to WMON
+function getTokenAddress(token: Token | null): Address | undefined {
+  if (!token) return undefined;
+  // If it's the native token (MON), use WMON address
+  if (token.address === NATIVE_TOKEN.address) {
+    return CONTRACTS.WMON;
+  }
+  return token.address;
+}
+
 export function usePair(
   tokenA: Token | null,
   tokenB: Token | null
 ): UsePairResult {
+  // Get actual addresses (converting native to wrapped)
+  const addressA = getTokenAddress(tokenA);
+  const addressB = getTokenAddress(tokenB);
+
   // Get pair address from factory
   const {
     data: pairAddress,
@@ -28,11 +42,12 @@ export function usePair(
     address: CONTRACTS.FACTORY,
     abi: FACTORY_ABI,
     functionName: "getPair",
-    args: tokenA && tokenB ? [tokenA.address, tokenB.address] : undefined,
+    args: addressA && addressB ? [addressA, addressB] : undefined,
     query: {
-      enabled: !!tokenA && !!tokenB,
+      enabled: !!addressA && !!addressB,
     },
   });
+
 
   const isValidPair =
     pairAddress && pairAddress !== zeroAddress;

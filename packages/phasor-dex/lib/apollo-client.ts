@@ -31,6 +31,7 @@ const httpLink = createHttpLink(SUBGRAPH_URL);
 const tokensHttpLink = createHttpLink(TOKENS_SUBGRAPH_URL);
 
 // Main subgraph client for DEX data (pairs, swaps, mints, burns)
+// Note: When subgraph is not deployed, queries will fail silently
 export const apolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache({
@@ -49,6 +50,12 @@ export const apolloClient = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
+          // Return empty arrays for missing fields to prevent console errors
+          uniswapFactories: {
+            read(existing) {
+              return existing || [];
+            },
+          },
         },
       },
     },
@@ -56,11 +63,11 @@ export const apolloClient = new ApolloClient({
   defaultOptions: {
     watchQuery: {
       fetchPolicy: "cache-and-network",
-      errorPolicy: "all",
+      errorPolicy: "ignore",
     },
     query: {
       fetchPolicy: "cache-first",
-      errorPolicy: "all",
+      errorPolicy: "ignore",
     },
   },
 });
