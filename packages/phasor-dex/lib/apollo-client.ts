@@ -6,16 +6,19 @@ const SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_SUBGRAPH_URL ||
   "http://localhost:8000/subgraphs/name/phasor-v2";
 
+/** @deprecated Use apolloClient instead - only one subgraph (phasor-v2) exists */
 const TOKENS_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_TOKENS_SUBGRAPH_URL ||
-  "http://localhost:8000/subgraphs/name/v2-tokens";
+  SUBGRAPH_URL; // Fallback to main subgraph
 
 const createHttpLink = (uri: string) =>
   new HttpLink({
     uri,
     fetch: (uri, options) => {
       return fetch(uri, options).catch((error) => {
-        console.debug("Subgraph fetch error:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.debug("Subgraph fetch error:", error);
+        }
         return new Response(JSON.stringify({ data: null, errors: [] }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -62,7 +65,11 @@ export const apolloClient = new ApolloClient({
   },
 });
 
-// Tokens subgraph client for price data (tokenDayData, tokenHourData)
+/**
+ * @deprecated Use apolloClient instead.
+ * There is only one subgraph (phasor-v2) which contains all data
+ * including tokenDayData and tokenHourData.
+ */
 export const tokensApolloClient = new ApolloClient({
   link: tokensHttpLink,
   cache: new InMemoryCache({

@@ -49,3 +49,50 @@ args = ["<%= BigInt(5000000000000) %>"]  # 5,000,000 * 10^6
 
 # Note: Generic ERC20 tokens (DAK, CHOG, YAKI, TKN1, TKN2) can be added manually after deployment if needed
 # For now, we deploy 7 core tokens with different decimal precisions which provides good test coverage
+
+# ============================================================================
+# PHASOR Token Ecosystem
+# ============================================================================
+
+# Native PHASOR token
+[deploy.PhasorToken]
+artifact = "packages/phasor-contracts/contracts/token/PhasorToken.sol:PhasorToken"
+
+# MasterChef farming contract
+[deploy.MasterChef]
+artifact = "packages/phasor-contracts/contracts/farming/MasterChef.sol:MasterChef"
+args = [
+    "<%= contracts.PhasorToken.address %>",
+    "<%= BigInt(100000000000000000000) %>",
+    "1"
+]
+depends = ["deploy.PhasorToken"]
+
+# Transfer PhasorToken ownership to MasterChef so it can mint rewards
+[invoke.transfer_phasor_ownership]
+target = ["PhasorToken"]
+func = "transferOwnership"
+args = ["<%= contracts.MasterChef.address %>"]
+depends = ["deploy.MasterChef"]
+
+# ============================================================================
+# Launchpad Ecosystem
+# ============================================================================
+
+# FairLaunch template (for cloning)
+[deploy.FairLaunchTemplate]
+artifact = "packages/phasor-contracts/contracts/launchpad/FairLaunch.sol:FairLaunch"
+depends = ["deploy.UniswapV2Router"]
+
+# LaunchpadFactory
+[deploy.LaunchpadFactory]
+artifact = "packages/phasor-contracts/contracts/launchpad/LaunchpadFactory.sol:LaunchpadFactory"
+args = [
+    "<%= contracts.UniswapV2Factory.address %>",
+    "<%= contracts.UniswapV2Router.address %>",
+    "<%= contracts.WMON.address %>",
+    "<%= contracts.FairLaunchTemplate.address %>",
+    "<%= settings.owner %>",
+    "200"
+]
+depends = ["deploy.FairLaunchTemplate"]
